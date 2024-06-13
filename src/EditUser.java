@@ -56,7 +56,6 @@ public class EditUser extends JFrame {
         JButton btnUpdate = new JButton("Update");
         JButton btnLogout = new JButton("Logout");
         JButton btnExit = new JButton("Keluar");
-
         JPanel contKamar = new JPanel(null);
         contJam.setBounds(0, 0, 350, 160);
         contJam.setBackground(new Color(0xD9D9D9));
@@ -65,9 +64,9 @@ public class EditUser extends JFrame {
         contDetails.setBackground(new Color(0xD9D9D9));
 
         contButton.setBounds(WindowSize.width - 350, 200, 350, 650);
-        contButton.setBackground(new Color(0, 0, 0, 0));
         contButton.setOpaque(true);
         contButton.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 67));
+        contButton.setBackground(Color.WHITE);
 
         contKamar.setBounds(67, 200, 1120, 650);
 

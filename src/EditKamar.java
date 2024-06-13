@@ -66,8 +66,7 @@ public class EditKamar extends JFrame {
         contDetails.setBackground(new Color(0xD9D9D9));
 
         contButton.setBounds(WindowSize.width - 350, 200, 350, 650);
-        contButton.setBackground(new Color(0, 0, 0, 0));
-        contButton.setOpaque(true);
+        contButton.setBackground(Color.WHITE);
         contButton.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 67));
 
         contKamar.setBounds(67, 200, 1120, 650);
@@ -89,19 +88,19 @@ public class EditKamar extends JFrame {
         acButton = new JRadioButton("AC");
         nonAcButton = new JRadioButton("Non-AC");
         ButtonGroup acGroup = new ButtonGroup();
-        acGroup.add(acButton);
-        acGroup.add(nonAcButton);
         acButton.setBounds(10, 130, 100, 30);
         nonAcButton.setBounds(120, 130, 100, 30);
+        acGroup.add(acButton);
+        acGroup.add(nonAcButton);
 
         // Radio Buttons for Single/Double
         singleButton = new JRadioButton("Single");
         doubleButton = new JRadioButton("Double");
         ButtonGroup bedGroup = new ButtonGroup();
-        bedGroup.add(singleButton);
-        bedGroup.add(doubleButton);
         singleButton.setBounds(10, 170, 100, 30);
         doubleButton.setBounds(120, 170, 100, 30);
+        bedGroup.add(singleButton);
+        bedGroup.add(doubleButton);
 
         btnLogout.addActionListener(new ActionListener() {
             @Override
