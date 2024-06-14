@@ -25,6 +25,10 @@ public class EditUser extends JFrame {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
     private JTable dataTable;
     private DefaultTableModel tableModel;
+    private JTextField inputEmail;
+    private JTextField inputUsername;
+    private JTextField inputPassword;
+    private JLabel updateStatusLabel;
 
     public EditUser() {
         try {
@@ -32,7 +36,7 @@ public class EditUser extends JFrame {
             statement = con.getConnection().createStatement();
             dataFromDB = statement.executeQuery("SELECT * FROM dataUser");
             while (dataFromDB.next()) {
-                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
+                RoomClass baru = new RoomClass(dataFromDB.getString(1), dataFromDB.getInt(2), dataFromDB.getInt(3), dataFromDB.getInt(4));
                 daftarKamar.add(baru);
             }
             System.out.println(daftarKamar.size());
@@ -49,12 +53,13 @@ public class EditUser extends JFrame {
         JLabel labelIDSearch = new JLabel("ID Admin/Customer");
         JTextField inputID = new JTextField("Masukkan ID...");
         JButton btnSearchID = new JButton(">>");
-        JPanel contButton = new JPanel(new GridLayout(9, 1, 0, 20));
-        JTextField inputEmail = new JTextField("Email/No. Telepone");
-        JTextField inputUsername = new JTextField("Username");
-        JTextField inputPassword = new JTextField("Password");
+        JPanel contButton = new JPanel(new GridLayout(10, 1, 0, 20));
+        inputEmail = new JTextField("Email/No. Telepone");
+        inputUsername = new JTextField("Username");
+        inputPassword = new JTextField("Password");
+        updateStatusLabel = new JLabel("", JLabel.CENTER);
         JButton btnUpdate = new JButton("Update");
-        JButton btnLogout = new JButton("Logout");
+        JButton btnAdmin = new JButton("Admin");
         JButton btnExit = new JButton("Keluar");
         JPanel contKamar = new JPanel(null);
         contJam.setBounds(0, 0, 350, 160);
@@ -71,10 +76,10 @@ public class EditUser extends JFrame {
         contKamar.setBounds(67, 200, 1120, 650);
 
         labelNama.setBounds(350, 0, WindowSize.width - 700, 160);
-        labelNama.setFont(new Font("Inter", Font.BOLD, 48));
+        labelNama.setFont(new Font("Inter", Font.BOLD, 72));
         labelNama.setHorizontalAlignment(JLabel.CENTER);
-        labelIDSearch.setFont(new Font("Inter", Font.BOLD, 20));
-        labelIDSearch.setBounds(10, 25, 240, 50);
+        labelIDSearch.setFont(new Font("Inter", Font.BOLD, 30));
+        labelIDSearch.setBounds(10, 25, 320, 50);
         inputID.setFont(new Font("Inter", Font.ITALIC, 20));
         inputID.setBounds(7, 80, 240, 50);
         btnSearchID.setFont(new Font("Inter", Font.BOLD, 32));
@@ -83,10 +88,12 @@ public class EditUser extends JFrame {
         inputUsername.setFont(new Font("Inter", Font.ITALIC, 20));
         inputPassword.setFont(new Font("Inter", Font.ITALIC, 20));
         btnUpdate.setFont(new Font("Inter", Font.BOLD, 32));
+        updateStatusLabel.setFont(new Font("Inter", Font.BOLD, 20));
+        updateStatusLabel.setForeground(Color.GREEN);
 
-        btnLogout.setFont(new Font("Inter", Font.BOLD, 32));
+        btnAdmin.setFont(new Font("Inter", Font.BOLD, 32));
         btnExit.setFont(new Font("Inter", Font.BOLD, 32));
-        btnLogout.addActionListener(new ActionListener() {
+        btnAdmin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -103,14 +110,8 @@ public class EditUser extends JFrame {
         btnSearchID.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    AdminLogin halo = new AdminLogin();
-                    halo.setVisible(true);
-                    halo.setLocationRelativeTo(null);
-                    dispose();
-                } catch (Exception err) {
-                    err.printStackTrace();
-                }
+                String userID = inputID.getText();
+                fetchUserData(userID);
             }
         });
 
@@ -118,6 +119,17 @@ public class EditUser extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.exit(0);
+            }
+        });
+
+        btnUpdate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String userID = inputID.getText();
+                String email = inputEmail.getText();
+                String username = inputUsername.getText();
+                String password = inputPassword.getText();
+                updateUser(userID, email, username, password);
             }
         });
 
@@ -224,21 +236,24 @@ public class EditUser extends JFrame {
         scrollPane.setBounds(0, 0, 1120, 650);
         contKamar.add(scrollPane);
 
-        tableModel.addRow(new Object[]{"nfdkjfjd","fdfd"});
+        tableModel.addRow(new Object[]{"A1111","admin@hotel.id","Mimin","hotel"});
+        tableModel.addRow(new Object[]{"C1111","0812345678","Michelle","1234"});
+
 
         contJam.add(dateLabel);
         contJam.add(timeLabel);
         contDetails.add(labelIDSearch);
         contDetails.add(inputID);
         contDetails.add(btnSearchID);
-        contButton.add(new JLabel());
+        contButton.add(updateStatusLabel);
         contButton.add(inputEmail);
         contButton.add(inputUsername);
         contButton.add(inputPassword);
         contButton.add(new JLabel());
         contButton.add(new JLabel());
+        contButton.add(new JLabel());
         contButton.add(btnUpdate);
-        contButton.add(btnLogout);
+        contButton.add(btnAdmin);
         contButton.add(btnExit);
 
         add(contJam);
@@ -259,6 +274,50 @@ public class EditUser extends JFrame {
         String currentDate = dateFormat.format(new Date());
         timeLabel.setText(currentTime);
         dateLabel.setText(currentDate);
+    }
+
+    private void fetchUserData(String userID) {
+        try {
+            String query = "SELECT * FROM dataUser WHERE id = ?";
+            PreparedStatement preparedStatement = con.getConnection().prepareStatement(query);
+            preparedStatement.setString(1, userID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                inputEmail.setText(resultSet.getString("email"));
+                inputUsername.setText(resultSet.getString("username"));
+                inputPassword.setText(resultSet.getString("password"));
+            } else {
+                updateStatusLabel.setText("User tidak ditemukan.");
+                updateStatusLabel.setForeground(Color.RED);
+            }
+        } catch (SQLException e) {
+            updateStatusLabel.setText("Error fetching user data.");
+            updateStatusLabel.setForeground(Color.RED);
+            e.printStackTrace();
+        }
+    }
+
+    private void updateUser(String userID, String email, String username, String password) {
+        try {
+            String query = "UPDATE dataUser SET email = ?, username = ?, password = ? WHERE id = ?";
+            PreparedStatement preparedStatement = con.getConnection().prepareStatement(query);
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, username);
+            preparedStatement.setString(3, password);
+            preparedStatement.setString(4, userID);
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                updateStatusLabel.setText("Update Berhasil...");
+                updateStatusLabel.setForeground(Color.GREEN);
+            } else {
+                updateStatusLabel.setText("Tidak Ada Perubahan Data.");
+                updateStatusLabel.setForeground(Color.ORANGE);
+            }
+        } catch (SQLException e) {
+            updateStatusLabel.setText("Update Gagal.");
+            updateStatusLabel.setForeground(Color.RED);
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

@@ -36,7 +36,7 @@ public class EditKamar extends JFrame {
             statement = con.getConnection().createStatement();
             dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
             while (dataFromDB.next()) {
-                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
+                RoomClass baru = new RoomClass(dataFromDB.getString(1),dataFromDB.getInt(2),dataFromDB.getInt(3),dataFromDB.getInt(4));
                 daftarKamar.add(baru);
             }
             System.out.println(daftarKamar.size());
@@ -55,7 +55,7 @@ public class EditKamar extends JFrame {
         JButton btnSearchNoKmr = new JButton(">>");
         JPanel contButton = new JPanel(new GridLayout(9, 1, 0, 20));
         JButton btnUpdate = new JButton("Update");
-        JButton btnLogout = new JButton("Logout");
+        JButton btnLogout = new JButton("Admin");
         JButton btnExit = new JButton("Keluar");
 
         JPanel contKamar = new JPanel(null);
@@ -72,9 +72,9 @@ public class EditKamar extends JFrame {
         contKamar.setBounds(67, 200, 1120, 650);
 
         labelNama.setBounds(350, 0, WindowSize.width - 700, 160);
-        labelNama.setFont(new Font("Inter", Font.BOLD, 48));
+        labelNama.setFont(new Font("Inter", Font.BOLD, 72));
         labelNama.setHorizontalAlignment(JLabel.CENTER);
-        labelKmrSearch.setFont(new Font("Inter", Font.BOLD, 20));
+        labelKmrSearch.setFont(new Font("Inter", Font.BOLD, 30));
         labelKmrSearch.setBounds(10, 25, 240, 50);
         inputID.setFont(new Font("Inter", Font.ITALIC, 20));
         inputID.setBounds(7, 80, 240, 50);
@@ -93,7 +93,6 @@ public class EditKamar extends JFrame {
         acGroup.add(acButton);
         acGroup.add(nonAcButton);
 
-        // Radio Buttons for Single/Double
         singleButton = new JRadioButton("Single");
         doubleButton = new JRadioButton("Double");
         ButtonGroup bedGroup = new ButtonGroup();
