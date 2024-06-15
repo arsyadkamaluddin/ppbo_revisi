@@ -107,8 +107,8 @@ public class AdminLogin extends JFrame{
             dataLoginFromDB = db.executeQuery(query);
 
             if (dataLoginFromDB.next()) {
-                if (dataLoginFromDB.getString(2).equals(inputPassword.getText())) {
-                    Home o = new Home();
+                if (dataLoginFromDB.getString(3).equals(inputPassword.getText())) {
+                    Admin o = new Admin();
                     o.setVisible(true);
                     o.setLocationRelativeTo(null);
                     this.dispose();

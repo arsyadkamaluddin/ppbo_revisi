@@ -32,7 +32,7 @@ public class EditUser extends JFrame {
             statement = con.getConnection().createStatement();
             dataFromDB = statement.executeQuery("SELECT * FROM dataUser");
             while (dataFromDB.next()) {
-                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
+                RoomClass baru = new RoomClass(dataFromDB.getString(1),dataFromDB.getInt(2),dataFromDB.getInt(3),dataFromDB.getInt(4));
                 daftarKamar.add(baru);
             }
             System.out.println(daftarKamar.size());

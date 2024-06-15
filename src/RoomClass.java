@@ -61,7 +61,7 @@ public class RoomClass {
        doubleLabel.setFont(new Font("Inter", Font.BOLD,18));
        
        container.setPreferredSize(new Dimension(300,90));;
-       container.setBackground(Color.BLUE);
+       container.setBackground(Color.LIGHT_GRAY);
 
        contLeft.add(nomorKamar);
        contLeft.add(acLabel);
@@ -72,6 +72,12 @@ public class RoomClass {
        container.addMouseListener(new MouseAdapter() {
         public void mouseClicked(MouseEvent me){
             System.out.println(roomNumber);
+        }
+        public void mouseEntered(MouseEvent me){
+            container.setBackground(Color.darkGray);
+        }
+        public void mouseExited(MouseEvent me){
+            container.setBackground(Color.LIGHT_GRAY);
         }
        });
 
