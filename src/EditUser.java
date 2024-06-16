@@ -16,7 +16,7 @@ import java.util.Locale;
 public class EditUser extends JFrame {
     ResultSet dataFromDB = null;
     Statement statement = null;
-    DbConnect con = null;
+    DbConnect con = new DbConnect();
     private ArrayList<RoomClass> daftarKamar = new ArrayList<RoomClass>();
     private JLabel timeLabel = new JLabel();
     private JLabel dateLabel = new JLabel();
@@ -32,18 +32,24 @@ public class EditUser extends JFrame {
 
     public EditUser() {
         try {
-            con = new DbConnect();
             statement = con.getConnection().createStatement();
-            dataFromDB = statement.executeQuery("SELECT * FROM dataUser");
-            while (dataFromDB.next()) {
-                RoomClass baru = new RoomClass(dataFromDB.getString(1), dataFromDB.getInt(2), dataFromDB.getInt(3), dataFromDB.getInt(4));
-                daftarKamar.add(baru);
-            }
-            System.out.println(daftarKamar.size());
         } catch (SQLException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
         init();
+        updateTable();
+    }    
+
+    private void updateTable(){
+        String query = "SELECT * FROM dataUser";
+        try{
+            dataFromDB = statement.executeQuery(query);
+            while(dataFromDB.next()){
+                tableModel.addRow(new Object[]{dataFromDB.getString(1),dataFromDB.getString(2),dataFromDB.getString(3),dataFromDB.getString(4)});
+            }
+        }catch (SQLException e){
+            System.out.println(e.toString());
+        }
     }
 
     private void init() {
@@ -59,7 +65,6 @@ public class EditUser extends JFrame {
         inputPassword = new JTextField("Password");
         updateStatusLabel = new JLabel("", JLabel.CENTER);
         JButton btnUpdate = new JButton("Update");
-        JButton btnAdmin = new JButton("Admin");
         JButton btnExit = new JButton("Keluar");
         JPanel contKamar = new JPanel(null);
         contJam.setBounds(0, 0, 350, 160);
@@ -91,21 +96,7 @@ public class EditUser extends JFrame {
         updateStatusLabel.setFont(new Font("Inter", Font.BOLD, 20));
         updateStatusLabel.setForeground(Color.GREEN);
 
-        btnAdmin.setFont(new Font("Inter", Font.BOLD, 32));
         btnExit.setFont(new Font("Inter", Font.BOLD, 32));
-        btnAdmin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Login halo = new Login();
-                    halo.setVisible(true);
-                    halo.setLocationRelativeTo(null);
-                    dispose();
-                } catch (Exception err) {
-                    err.printStackTrace();
-                }
-            }
-        });
 
         btnSearchID.addActionListener(new ActionListener() {
             @Override
@@ -225,13 +216,11 @@ public class EditUser extends JFrame {
 
         updateTime();
 
-        tableModel = new DefaultTableModel();
-        tableModel.addColumn("ID Account");
-        tableModel.addColumn("Email/Telepone");
-        tableModel.addColumn("Username");
-        tableModel.addColumn("Password");
-
+        tableModel = new DefaultTableModel(new Object[][]{},new String[]{"Name","Username","Password","Role"});
         dataTable = new JTable(tableModel);
+        dataTable.disable();
+        dataTable.setRowHeight(30);
+        dataTable.setFont(new Font("Inter",Font.PLAIN,15));
         JScrollPane scrollPane = new JScrollPane(dataTable);
         scrollPane.setBounds(0, 0, 1120, 650);
         contKamar.add(scrollPane);
@@ -252,8 +241,8 @@ public class EditUser extends JFrame {
         contButton.add(new JLabel());
         contButton.add(new JLabel());
         contButton.add(new JLabel());
+        contButton.add(new JLabel());
         contButton.add(btnUpdate);
-        contButton.add(btnAdmin);
         contButton.add(btnExit);
 
         add(contJam);

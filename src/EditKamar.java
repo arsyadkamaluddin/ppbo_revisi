@@ -16,7 +16,7 @@ import java.util.Locale;
 public class EditKamar extends JFrame {
     ResultSet dataFromDB = null;
     Statement statement = null;
-    DbConnect con = null;
+    DbConnect con = new DbConnect();
     private ArrayList<RoomClass> daftarKamar = new ArrayList<RoomClass>();
     private JLabel timeLabel = new JLabel();
     private JLabel dateLabel = new JLabel();
@@ -29,21 +29,34 @@ public class EditKamar extends JFrame {
     private JRadioButton nonAcButton;
     private JRadioButton singleButton;
     private JRadioButton doubleButton;
+    private JTextField inputHarga;
+    private JLabel updateStatusLabel = new JLabel();
+    private JTextField inputID;
 
     public EditKamar() {
         try {
-            con = new DbConnect();
             statement = con.getConnection().createStatement();
-            dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        init();
+        updateTable();
+    }
+
+    private void updateTable() {
+        String query = "SELECT * FROM datakamar";
+        try {
+            dataFromDB = statement.executeQuery(query);
             while (dataFromDB.next()) {
-                RoomClass baru = new RoomClass(dataFromDB.getString(1),dataFromDB.getInt(2),dataFromDB.getInt(3),dataFromDB.getInt(4));
-                daftarKamar.add(baru);
+                tableModel.addRow(new Object[]{dataFromDB.getString("nomorKamar"), 
+                    dataFromDB.getInt("ranjang") == 2 ? "Double" : "Single", 
+                    dataFromDB.getInt("ac") == 0 ? "NON-AC" : "AC", 
+                    dataFromDB.getString("status"), 
+                    dataFromDB.getInt("harga")});
             }
-            System.out.println(daftarKamar.size());
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
-        init();
     }
 
     private void init() {
@@ -54,11 +67,16 @@ public class EditKamar extends JFrame {
         JTextField inputID = new JTextField("Masukkan nomor kamar...");
         JButton btnSearchNoKmr = new JButton(">>");
         JPanel contButton = new JPanel(new GridLayout(9, 1, 0, 20));
+        JPanel contAC = new JPanel(new GridLayout(1, 2, 20, 0));
+        JPanel contBed = new JPanel(new GridLayout(1, 2, 20, 0));
+        inputHarga = new JTextField("Harga");
         JButton btnUpdate = new JButton("Update");
-        JButton btnLogout = new JButton("Admin");
-        JButton btnExit = new JButton("Keluar");
+        JButton btnExit = new JButton("Kembali");
 
         JPanel contKamar = new JPanel(null);
+
+        JTable tabelKamar;
+
         contJam.setBounds(0, 0, 350, 160);
         contJam.setBackground(new Color(0xD9D9D9));
 
@@ -68,6 +86,14 @@ public class EditKamar extends JFrame {
         contButton.setBounds(WindowSize.width - 350, 200, 350, 650);
         contButton.setBackground(Color.WHITE);
         contButton.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 67));
+
+        contAC.setBounds(WindowSize.width - 350, 200, 350, 50);
+        contAC.setBackground(new Color(0xD9D9D9));
+        contAC.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
+        contBed.setBounds(WindowSize.width - 350, 200, 350, 50);
+        contBed.setBackground(new Color(0xD9D9D9));
+        contBed.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
         contKamar.setBounds(67, 200, 1120, 650);
 
@@ -80,88 +106,77 @@ public class EditKamar extends JFrame {
         inputID.setBounds(7, 80, 240, 50);
         btnSearchNoKmr.setFont(new Font("Inter", Font.BOLD, 32));
         btnSearchNoKmr.setBounds(250, 80, 80, 50);
+        inputHarga.setFont(new Font("Inter", Font.ITALIC, 20));
         btnUpdate.setFont(new Font("Inter", Font.BOLD, 32));
-
-        btnLogout.setFont(new Font("Inter", Font.BOLD, 32));
         btnExit.setFont(new Font("Inter", Font.BOLD, 32));
 
         acButton = new JRadioButton("AC");
         nonAcButton = new JRadioButton("Non-AC");
         ButtonGroup acGroup = new ButtonGroup();
-        acButton.setBounds(10, 130, 100, 30);
-        nonAcButton.setBounds(120, 130, 100, 30);
         acGroup.add(acButton);
         acGroup.add(nonAcButton);
 
         singleButton = new JRadioButton("Single");
         doubleButton = new JRadioButton("Double");
         ButtonGroup bedGroup = new ButtonGroup();
-        singleButton.setBounds(10, 170, 100, 30);
-        doubleButton.setBounds(120, 170, 100, 30);
         bedGroup.add(singleButton);
         bedGroup.add(doubleButton);
 
-        btnLogout.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Login halo = new Login();
-                    halo.setVisible(true);
-                    halo.setLocationRelativeTo(null);
-                    dispose();
-                } catch (Exception err) {
-                    err.printStackTrace();
-                }
-            }
-        });
+        acButton.setFont(new Font("Inter", Font.ITALIC, 20));
+        nonAcButton.setFont(new Font("Inter", Font.ITALIC, 20));
+        singleButton.setFont(new Font("Inter", Font.ITALIC, 20));
+        doubleButton.setFont(new Font("Inter", Font.ITALIC, 20));
+
+        acButton.setBounds(10, 10, 100, 30);
+        nonAcButton.setBounds(120, 10, 100, 30);
+        singleButton.setBounds(10, 10, 100, 30);
+        doubleButton.setBounds(120, 10, 100, 30);
 
         btnSearchNoKmr.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    AdminLogin halo = new AdminLogin();
-                    halo.setVisible(true);
-                    halo.setLocationRelativeTo(null);
-                    dispose();
-                } catch (Exception err) {
-                    err.printStackTrace();
-                }
+                String roomNumber = inputID.getText();
+                fetchRoomData(roomNumber);
             }
         });
+
+        btnUpdate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nomorKamar = inputID.getText(); 
+                int ranjang = singleButton.isSelected() ? 1 : 2; 
+                int ac = acButton.isSelected() ? 1 : 0; 
+                int harga = Integer.parseInt(inputHarga.getText()); 
+        
+                updateUser(nomorKamar, ranjang, ac, harga);
+            }
+        });        
 
         btnExit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                Admin admin = new Admin();
+                admin.setVisible(true);
+                dispose();
             }
         });
 
-        // Adding action listeners
-        acButton.addActionListener(new ActionListener() {
+        inputHarga.addKeyListener(new KeyListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                // handle AC selected
+            public void keyTyped(KeyEvent e) {
+                if (inputHarga.getText().equals("Harga")) {
+                    inputHarga.setText("");
+                } else if (inputHarga.getText().equals("")) {
+                    inputHarga.setText("Harga");
+                }
             }
-        });
 
-        nonAcButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                // handle Non-AC selected
+            public void keyPressed(KeyEvent e) {
             }
-        });
 
-        singleButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                // handle Single bed selected
-            }
-        });
-
-        doubleButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // handle Double bed selected
+            public void keyReleased(KeyEvent e) {
             }
         });
 
@@ -200,32 +215,32 @@ public class EditKamar extends JFrame {
 
         updateTime();
 
-        tableModel = new DefaultTableModel();
-        tableModel.addColumn("Nomor kamar");
-        tableModel.addColumn("AC/Non-AC");
-        tableModel.addColumn("Tipe Bed");
-        tableModel.addColumn("Status");
-
+        tableModel = new DefaultTableModel(new Object[][]{}, new String[]{"Nomor", "Ranjang", "AC", "Status", "Harga"});
         dataTable = new JTable(tableModel);
+        dataTable.disable();
+        dataTable.setRowHeight(30);
+        dataTable.setFont(new Font("Inter", Font.PLAIN, 15));
         JScrollPane scrollPane = new JScrollPane(dataTable);
         scrollPane.setBounds(0, 0, 1120, 650);
         contKamar.add(scrollPane);
-
-        tableModel.addRow(new Object[]{"nfdkjfjd", "fdfd"});
 
         contJam.add(dateLabel);
         contJam.add(timeLabel);
         contDetails.add(labelKmrSearch);
         contDetails.add(inputID);
         contDetails.add(btnSearchNoKmr);
-        contButton.add(acButton);
-        contButton.add(nonAcButton);
-        contButton.add(singleButton);
-        contButton.add(doubleButton);
+        contButton.add(new JLabel());
+        contAC.add(acButton);
+        contAC.add(nonAcButton);
+        contBed.add(singleButton);
+        contBed.add(doubleButton);
+        contButton.add(contAC);
+        contButton.add(contBed);
+        contButton.add(inputHarga);
+        contButton.add(new JLabel());
         contButton.add(new JLabel());
         contButton.add(new JLabel());
         contButton.add(btnUpdate);
-        contButton.add(btnLogout);
         contButton.add(btnExit);
 
         add(contJam);
@@ -236,34 +251,117 @@ public class EditKamar extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(WindowSize.width, WindowSize.heigth);
         setUndecorated(true);
+
+        updateTableData();
+
         setLayout(null);
         getContentPane().setBackground(Color.WHITE);
         setVisible(true);
-    }
+        }
 
-    private void updateTime() {
-        String currentTime = timeFormat.format(new Date());
-        String currentDate = dateFormat.format(new Date());
-        timeLabel.setText(currentTime);
-        dateLabel.setText(currentDate);
-    }
-
-    public static void main(String[] args) {
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
+        private void updateTime() {
+            String currentTime = timeFormat.format(new Date());
+            String currentDate = dateFormat.format(new Date());
+            timeLabel.setText(currentTime);
+            dateLabel.setText(currentDate);
+        }
+    
+        private void fetchRoomData(String roomNumber) {
+            try {
+                String query = "SELECT * FROM datakamar WHERE nomorKamar = ?";
+                PreparedStatement preparedStatement = con.getConnection().prepareStatement(query);
+                preparedStatement.setString(1, roomNumber);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    inputHarga.setText(String.valueOf(resultSet.getInt("harga")));
+    
+                    int ranjang = resultSet.getInt("ranjang");
+                    if (ranjang == 1) {
+                        singleButton.setSelected(true);
+                    } else if (ranjang == 2) {
+                        doubleButton.setSelected(true);
+                    }
+    
+                    int ac = resultSet.getInt("ac");
+                    if (ac == 1) {
+                        acButton.setSelected(true);
+                    } else {
+                        nonAcButton.setSelected(true);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Kamar tidak ditemukan.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                System.out.println(info.getName());
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error fetching room data.", "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            System.out.println(e.toString());
         }
-        try {
-            EditKamar halo = new EditKamar();
-        } catch (Exception e) {
-            System.out.println(e.toString());
+    
+        private void updateUser(String nomorKamar, int ranjang, int ac, int harga) {
+            try {
+                String query = "UPDATE datakamar SET ranjang = ?, ac = ?, harga = ? WHERE nomorKamar = ?";
+                PreparedStatement preparedStatement = con.getConnection().prepareStatement(query);
+                preparedStatement.setInt(1, ranjang);
+                preparedStatement.setInt(2, ac);
+                preparedStatement.setInt(3, harga);
+                preparedStatement.setString(4, nomorKamar);
+        
+                int rowsUpdated = preparedStatement.executeUpdate();
+                if (rowsUpdated > 0) {
+                    JOptionPane.showMessageDialog(this, "Data kamar berhasil diperbarui untuk nomor kamar " + nomorKamar);
+                    updateStatusLabel.setText("Update Berhasil...");
+                    updateStatusLabel.setForeground(Color.GREEN);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Tidak ada perubahan data untuk nomor kamar " + nomorKamar);
+                    updateStatusLabel.setText("Tidak Ada Perubahan Data.");
+                    updateStatusLabel.setForeground(Color.ORANGE);
+                }
+                updateTableData();
+                
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error updating room data: " + e.getMessage());
+                updateStatusLabel.setText("Update Gagal.");
+                updateStatusLabel.setForeground(Color.RED);
+                e.printStackTrace();
+            }
+        }
+
+        private void updateTableData() {
+            tableModel.setRowCount(0);
+        
+            String query = "SELECT * FROM datakamar";
+            try {
+                dataFromDB = statement.executeQuery(query);
+                while (dataFromDB.next()) {
+                    tableModel.addRow(new Object[]{
+                        dataFromDB.getString("nomorKamar"),
+                        dataFromDB.getInt("ranjang") == 2 ? "Double" : "Single",
+                        dataFromDB.getInt("ac") == 1 ? "AC" : "Non-AC",
+                        dataFromDB.getString("status"),
+                        dataFromDB.getInt("harga")
+                    });
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error updating table data: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        
+        public static void main(String[] args) {
+            try {
+                for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
+    
+            SwingUtilities.invokeLater(() -> {
+                new EditKamar();
+            });
         }
     }
-}
+    
