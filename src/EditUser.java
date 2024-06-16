@@ -17,7 +17,7 @@ public class EditUser extends JFrame {
     ResultSet dataFromDB = null;
     Statement statement = null;
     DbConnect con = new DbConnect();
-    private ArrayList<RoomClass> daftarKamar = new ArrayList<RoomClass>();
+    private ArrayList<UserClass> daftarUser = new ArrayList<UserClass>();
     private JLabel timeLabel = new JLabel();
     private JLabel dateLabel = new JLabel();
     private JScrollPane contKamar = new JScrollPane();
@@ -28,7 +28,8 @@ public class EditUser extends JFrame {
     private JTextField inputEmail;
     private JTextField inputUsername;
     private JTextField inputPassword;
-    private JLabel updateStatusLabel;
+    private JLabel updateStatusLabel = new JLabel();
+    private JTextField inputID;
 
     public EditUser() {
         try {
@@ -41,11 +42,15 @@ public class EditUser extends JFrame {
     }    
 
     private void updateTable(){
-        String query = "SELECT * FROM dataUser";
+        String query = "SELECT * FROM datauser";
         try{
             dataFromDB = statement.executeQuery(query);
-            while(dataFromDB.next()){
-                tableModel.addRow(new Object[]{dataFromDB.getString(1),dataFromDB.getString(2),dataFromDB.getString(3),dataFromDB.getString(4)});
+            while (dataFromDB.next()) {
+                tableModel.addRow(new Object[]{dataFromDB.getString("userId"), 
+                    dataFromDB.getString("name"), 
+                    dataFromDB.getString("username"), 
+                    dataFromDB.getString("password"), 
+                    dataFromDB.getString("role")});
             }
         }catch (SQLException e){
             System.out.println(e.toString());
@@ -57,16 +62,19 @@ public class EditUser extends JFrame {
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Edit User");
         JLabel labelIDSearch = new JLabel("ID Admin/Customer");
-        JTextField inputID = new JTextField("Masukkan ID...");
+        inputID = new JTextField("Masukkan ID..."); // Remove local declaration
         JButton btnSearchID = new JButton(">>");
         JPanel contButton = new JPanel(new GridLayout(10, 1, 0, 20));
         inputEmail = new JTextField("Email/No. Telepone");
         inputUsername = new JTextField("Username");
         inputPassword = new JTextField("Password");
-        updateStatusLabel = new JLabel("", JLabel.CENTER);
         JButton btnUpdate = new JButton("Update");
         JButton btnExit = new JButton("Keluar");
+
         JPanel contKamar = new JPanel(null);
+
+        JTable tableUser;
+
         contJam.setBounds(0, 0, 350, 160);
         contJam.setBackground(new Color(0xD9D9D9));
 
@@ -106,13 +114,6 @@ public class EditUser extends JFrame {
             }
         });
 
-        btnExit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-
         btnUpdate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -120,7 +121,15 @@ public class EditUser extends JFrame {
                 String email = inputEmail.getText();
                 String username = inputUsername.getText();
                 String password = inputPassword.getText();
+
                 updateUser(userID, email, username, password);
+            }
+        });
+
+        btnExit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
             }
         });
 
@@ -216,7 +225,7 @@ public class EditUser extends JFrame {
 
         updateTime();
 
-        tableModel = new DefaultTableModel(new Object[][]{},new String[]{"Name","Username","Password","Role"});
+        tableModel = new DefaultTableModel(new Object[][]{},new String[]{"User ID", "Name","Username","Password","Role"});
         dataTable = new JTable(tableModel);
         dataTable.disable();
         dataTable.setRowHeight(30);
@@ -225,16 +234,12 @@ public class EditUser extends JFrame {
         scrollPane.setBounds(0, 0, 1120, 650);
         contKamar.add(scrollPane);
 
-        tableModel.addRow(new Object[]{"A1111","admin@hotel.id","Mimin","hotel"});
-        tableModel.addRow(new Object[]{"C1111","0812345678","Michelle","1234"});
-
-
         contJam.add(dateLabel);
         contJam.add(timeLabel);
         contDetails.add(labelIDSearch);
-        contDetails.add(inputID);
+        contDetails.add(inputID); // Use the correct inputID
         contDetails.add(btnSearchID);
-        contButton.add(updateStatusLabel);
+        contButton.add(new JLabel());
         contButton.add(inputEmail);
         contButton.add(inputUsername);
         contButton.add(inputPassword);
@@ -253,6 +258,9 @@ public class EditUser extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(WindowSize.width, WindowSize.heigth);
         setUndecorated(true);
+
+        updateTableData();
+
         setLayout(null);
         getContentPane().setBackground(Color.WHITE);
         setVisible(true);
@@ -266,29 +274,31 @@ public class EditUser extends JFrame {
     }
 
     private void fetchUserData(String userID) {
+        System.out.println("Fetching data for userID: " + userID);
         try {
-            String query = "SELECT * FROM dataUser WHERE id = ?";
+            String query = "SELECT * FROM datauser WHERE userId = ?";
             PreparedStatement preparedStatement = con.getConnection().prepareStatement(query);
             preparedStatement.setString(1, userID);
             ResultSet resultSet = preparedStatement.executeQuery();
+            
             if (resultSet.next()) {
                 inputEmail.setText(resultSet.getString("email"));
                 inputUsername.setText(resultSet.getString("username"));
                 inputPassword.setText(resultSet.getString("password"));
             } else {
-                updateStatusLabel.setText("User tidak ditemukan.");
-                updateStatusLabel.setForeground(Color.RED);
+                JOptionPane.showMessageDialog(this, "User tidak ditemukan.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException e) {
-            updateStatusLabel.setText("Error fetching user data.");
-            updateStatusLabel.setForeground(Color.RED);
+            JOptionPane.showMessageDialog(this, "Error fetching user data.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.println("SQLException: " + e.getMessage());
             e.printStackTrace();
         }
     }
+    
 
     private void updateUser(String userID, String email, String username, String password) {
         try {
-            String query = "UPDATE dataUser SET email = ?, username = ?, password = ? WHERE id = ?";
+            String query = "UPDATE dataUser SET email = ?, username = ?, password = ? WHERE userId = ?";
             PreparedStatement preparedStatement = con.getConnection().prepareStatement(query);
             preparedStatement.setString(1, email);
             preparedStatement.setString(2, username);
@@ -296,15 +306,38 @@ public class EditUser extends JFrame {
             preparedStatement.setString(4, userID);
             int rowsUpdated = preparedStatement.executeUpdate();
             if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(this, "Data user berhasil diperbarui untuk user id " + userID);
                 updateStatusLabel.setText("Update Berhasil...");
                 updateStatusLabel.setForeground(Color.GREEN);
             } else {
+                JOptionPane.showMessageDialog(this, "Data user berhasil diperbarui untuk user id " + userID);
                 updateStatusLabel.setText("Tidak Ada Perubahan Data.");
                 updateStatusLabel.setForeground(Color.ORANGE);
             }
+            updateTableData();
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error updating user data: " + e.getMessage());
             updateStatusLabel.setText("Update Gagal.");
             updateStatusLabel.setForeground(Color.RED);
+            e.printStackTrace();
+        }
+    }
+
+    private void updateTableData() {
+        tableModel.setRowCount(0);
+
+        String query = "SELECT * FROM datauser";
+        try {
+            dataFromDB = statement.executeQuery(query);
+            while (dataFromDB.next()) {
+                tableModel.addRow(new Object[]{dataFromDB.getString("userId"), 
+                    dataFromDB.getString("name"), 
+                    dataFromDB.getString("username"), 
+                    dataFromDB.getString("password"), 
+                    dataFromDB.getString("role")});
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error updating table data: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -316,15 +349,13 @@ public class EditUser extends JFrame {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
-                System.out.println(info.getName());
             }
         } catch (Exception e) {
             System.out.println(e.toString());
         }
-        try {
-            EditUser halo = new EditUser();
-        } catch (Exception e) {
-            System.out.println(e.toString());
-        }
+
+        SwingUtilities.invokeLater(() -> {
+            new EditUser();
+        });
     }
 }
