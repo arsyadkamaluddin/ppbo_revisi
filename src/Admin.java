@@ -30,6 +30,9 @@ public class Admin extends JFrame{
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
     private DefaultTableModel dataTblKamar;
+    private DefaultTableModel dataTblUser;
+    private JLabel dataKamar = new JLabel();
+    private JLabel dataPengunjung = new JLabel();
     
     public Admin(){
         try {
@@ -43,12 +46,29 @@ public class Admin extends JFrame{
     }    
 
     private void updateTable(){
-        String query = "SELECT * FROM dataKamar";
         try{
+            statement.executeQuery("CALL update_stat('"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"')");
+            String query = "SELECT * FROM dataKamar";
             dataFromDB = statement.executeQuery(query);
             while(dataFromDB.next()){
                 dataTblKamar.addRow(new Object[]{dataFromDB.getString(2),dataFromDB.getInt(3)==2?"Double":"Single",dataFromDB.getInt(4)==0?"NON-AC":"AC",dataFromDB.getString(5),dataFromDB.getInt(6)});
             }
+            query = "SELECT * FROM dataUser";
+            dataFromDB = statement.executeQuery(query);
+            while(dataFromDB.next()){
+                dataTblUser.addRow(new Object[]{dataFromDB.getString(1),dataFromDB.getString(2),dataFromDB.getString(3)});
+            }
+            query = "SELECT COUNT(nomorKamar) FROM dataKamar WHERE status!='Used'";
+            dataFromDB = statement.executeQuery(query);
+            while(dataFromDB.next()){
+                dataKamar.setText(Integer.toString(dataFromDB.getInt(1)));
+            }
+            query = "SELECT COUNT(nomorKamar) FROM dataKamar WHERE status='Used'";
+            dataFromDB = statement.executeQuery(query);
+            while(dataFromDB.next()){
+                dataPengunjung.setText(Integer.toString(dataFromDB.getInt(1)));
+            }
+            
         }catch (SQLException e){
             System.out.println(e.toString());
         }
@@ -63,6 +83,7 @@ public class Admin extends JFrame{
 
         
         JTable tabelKamar;
+        JTable tabelUser;
         
         
         JScrollPane scrKamar = new JScrollPane();
@@ -71,8 +92,6 @@ public class Admin extends JFrame{
         JLabel labelNama = new JLabel("Admin Hotel Disyfa");
         JLabel labelKamar = new JLabel("Sisa Kamar");
         JLabel labelPengunjung = new JLabel("Pengunjung");
-        JLabel dataKamar = new JLabel("10");
-        JLabel dataPengunjung = new JLabel("20");
 
         JButton btnUser = new JButton("Edit User");
         JButton btnKamar = new JButton("Edit Kamar");
@@ -83,17 +102,21 @@ public class Admin extends JFrame{
         JTextField inputHarga = new JTextField("Harga ");
 
         dataTblKamar = new DefaultTableModel(new Object[][]{},new String[]{"Nomor","Ranjang","AC","Status","Harga"});
+        dataTblUser = new DefaultTableModel(new Object[][]{},new String[]{"Nama","NIK","NO Telepon"});
         tabelKamar = new JTable(dataTblKamar);
         tabelKamar.disable();
         tabelKamar.setRowHeight(30);
         tabelKamar.setFont(new Font("Inter",Font.PLAIN,15));
-        // tabelKamar.setTableHeader(new JTableHeader());
-        tabelKamar.getTableHeader().setReorderingAllowed(false);
-        tabelKamar.add(new JLabel("Kamar"));
         
+        tabelUser = new JTable(dataTblUser);
+        tabelUser.disable();
+        tabelUser.setRowHeight(30);
+        tabelUser.setFont(new Font("Inter",Font.PLAIN,15));        
 
         scrKamar.setBounds(0, 0, 1120, 325);
         scrKamar.setViewportView(tabelKamar);
+        scrUser.setBounds(0, 326, 1120, 325);
+        scrUser.setViewportView(tabelUser);
 
 
         contJam.setBounds(0,0,350,160);
@@ -242,6 +265,7 @@ public class Admin extends JFrame{
         contDetails.add(dataPengunjung);
 
         contMain.add(scrKamar);
+        contMain.add(scrUser);
 
         contButton.add(btnUser);
         contButton.add(btnKamar);

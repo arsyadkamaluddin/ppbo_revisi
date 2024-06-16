@@ -30,6 +30,7 @@ public class Home extends JFrame{
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
     private JPanel contKamar = new JPanel(null);
+    private JLabel labelHasil = new JLabel();
     
     public Home(){
         try {
@@ -53,14 +54,12 @@ public class Home extends JFrame{
             System.out.println(e.toString());
         }
         int h = (int)Math.ceil(daftarKamar.size()/3)*100+400;
+        labelHasil.setPreferredSize(new Dimension(1050,30));
+        contKamar.add(labelHasil);
         contKamar.setPreferredSize(new Dimension(1050, h));
+        labelHasil.setText("Ditemukan " +Integer.toString(daftarKamar.size())+" kamar");
     }
     private void updateKamar(JPanel cont){
-        if(inputMasuk.getDate().after(inputKeluar.getDate())){
-            JOptionPane.showMessageDialog(null,"Cek In harus lebih awal");
-            inputMasuk.setDate(new Date());
-            return;
-        }
         cont.removeAll();
         daftarKamar.clear();
         String tglMasuk = new SimpleDateFormat("yyyy-MM-dd").format(inputMasuk.getDate());
@@ -83,6 +82,8 @@ public class Home extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 cont.removeAll();
+                labelHasil.setText("Ditemukan " +Integer.toString(daftarKamar.size())+" kamar");
+                cont.add(labelHasil);
                 for(RoomClass kamar:daftarKamar){
                     cont.add(kamar.createCard());
                 }          
@@ -92,8 +93,6 @@ public class Home extends JFrame{
         t.start();
         int h = (int)Math.ceil(daftarKamar.size()/3)*100+400;
         contKamar.setPreferredSize(new Dimension(1050, h));
-        System.out.println("UPDATE"+acC+doubleBe);
-        System.out.println(daftarKamar.size());
     }
     public class CustomCheckBoxIcon implements Icon {
         private int size;
@@ -112,7 +111,6 @@ public class Home extends JFrame{
             } else {
                 g.setColor(Color.WHITE);
                 g.fillArc(x,y,size-1,size-1,0,360);
-//                g.drawRect(x, y, size - 1, size - 1);
             }
         }
 
@@ -143,7 +141,7 @@ public class Home extends JFrame{
         JLabel dataPengunjung = new JLabel("20");
 
         JButton btnAdmin = new JButton("Admin");
-        JButton btnCustomers = new JButton("Customers");
+        JButton btnCustomers = new JButton("Bookings");
         JButton btnRooms = new JButton("Rooms");
         JButton btnLogout = new JButton("Logout");
         JButton btnExit = new JButton("Keluar");
@@ -163,7 +161,7 @@ public class Home extends JFrame{
         contMain.setBounds(67,200,1120,650);
         
         contKamar.setLayout(new FlowLayout(FlowLayout.LEADING,20,20));
-        contKamar.setBorder(BorderFactory.createEmptyBorder(30, 80, 0, 30));
+        contKamar.setBorder(BorderFactory.createEmptyBorder(0, 80, 0, 30));
         contData.setViewportView(contKamar);
         contData.setBounds(0,100,1120,550);
 
@@ -179,6 +177,23 @@ public class Home extends JFrame{
 
         labelPengunjung.setFont(new Font("Inter", Font.BOLD,20));
         labelPengunjung.setBounds(67,80,180,50);
+
+        labelHasil.setFont(new Font("Inter",Font.BOLD,15));
+
+        try{
+            String query = "SELECT COUNT(nomorKamar) FROM dataKamar WHERE status!='Used'";
+            dataFromDB = statement.executeQuery(query);
+            while(dataFromDB.next()){
+                dataKamar.setText(Integer.toString(dataFromDB.getInt(1)));
+            }
+            query = "SELECT COUNT(nomorKamar) FROM dataKamar WHERE status='Used'";
+            dataFromDB = statement.executeQuery(query);
+            while(dataFromDB.next()){
+                dataPengunjung.setText(Integer.toString(dataFromDB.getInt(1)));
+            }
+        }catch(SQLException e){
+
+        }
 
         dataPengunjung.setFont(new Font("Inter", Font.BOLD,20));
         dataPengunjung.setBounds(247,80,230,50);
@@ -261,10 +276,12 @@ public class Home extends JFrame{
         inputIn.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if(inputIn.getText().equals("Check IN : ")){
-                    inputIn.setText("");
-                }else if(inputIn.getText().equals("")){
-                    inputIn.setText("Check IN : ");
+                if(Character.isDigit(e.getKeyChar())){
+                    if(inputIn.getText().equals("Check IN : ")){
+                        inputIn.setText("");
+                    }else if(inputIn.getText().equals("")){
+                        inputIn.setText("Check IN : ");
+                    }
                 }
             }
 
@@ -275,16 +292,20 @@ public class Home extends JFrame{
 
             @Override
             public void keyReleased(KeyEvent e) {
-
+                if(!Character.isDigit(e.getKeyChar())){
+                    inputIn.setText("Check IN : ");
+                }
             }
         });
         inputOut.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if(inputOut.getText().equals("Check OUT : ")){
-                    inputOut.setText("");
-                }else if(inputOut.getText().equals("")){
-                    inputOut.setText("Check OUT : ");
+                if(Character.isDigit(e.getKeyChar())){
+                    if(inputOut.getText().equals("Check Out : ")){
+                        inputOut.setText("");
+                    }else if(inputOut.getText().equals("")){
+                        inputOut.setText("Check Out : ");
+                    }
                 }
             }
 
@@ -295,18 +316,33 @@ public class Home extends JFrame{
 
             @Override
             public void keyReleased(KeyEvent e) {
-
+                if(!Character.isDigit(e.getKeyChar())){
+                    inputOut.setText("Check Out : ");
+                }
             }
         });
         inputMasuk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(inputMasuk.getDate().after(inputKeluar.getDate())){
+                    inputKeluar.setDate(inputMasuk.getDate());
+                }
+                if(inputMasuk.getDate().before(new Date())){
+                    JOptionPane.showMessageDialog(null,"Tidak bisa reservasi tanggal yang lewat");
+                    inputMasuk.setDate(new Date());
+    
+                }
                 updateKamar(contKamar);
             }
         });
         inputKeluar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(inputMasuk.getDate().after(inputKeluar.getDate())){
+                    JOptionPane.showMessageDialog(null,"Cek In harus lebih awal");
+                    inputKeluar.setDate(inputMasuk.getDate());
+                    return;
+                }
                 updateKamar(contKamar);
             }
         });
