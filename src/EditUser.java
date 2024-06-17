@@ -38,24 +38,7 @@ public class EditUser extends JFrame {
             System.out.println(e);
         }
         init();
-        updateTable();
     }    
-
-    private void updateTable(){
-        String query = "SELECT * FROM datauser";
-        try{
-            dataFromDB = statement.executeQuery(query);
-            while (dataFromDB.next()) {
-                tableModel.addRow(new Object[]{dataFromDB.getString("userId"), 
-                    dataFromDB.getString("name"), 
-                    dataFromDB.getString("username"), 
-                    dataFromDB.getString("password"), 
-                    dataFromDB.getString("role")});
-            }
-        }catch (SQLException e){
-            System.out.println(e.toString());
-        }
-    }
 
     private void init() {
         JPanel contJam = new JPanel(null);
