@@ -11,7 +11,7 @@ public class DbConnect {
     {
         try{
             Class.forName("com.mysql.jdbc.Driver");  
-            conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/disyfa","root","");
+            conn=DriverManager.getConnection("jdbc:mysql://localhost:3307/disyfa","root","");
         }catch (ClassNotFoundException | SQLException e)
         {
         }
