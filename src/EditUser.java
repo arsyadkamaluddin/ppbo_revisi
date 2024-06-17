@@ -25,7 +25,7 @@ public class EditUser extends JFrame {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
     private JTable dataTable;
     private DefaultTableModel tableModel;
-    private JTextField inputEmail;
+    private JTextField inputNama;
     private JTextField inputUsername;
     private JTextField inputPassword;
     private JLabel updateStatusLabel = new JLabel();
@@ -62,14 +62,14 @@ public class EditUser extends JFrame {
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Edit User");
         JLabel labelIDSearch = new JLabel("ID Admin/Customer");
-        inputID = new JTextField("Masukkan ID..."); // Remove local declaration
+        inputID = new JTextField("Masukkan ID...");
         JButton btnSearchID = new JButton(">>");
         JPanel contButton = new JPanel(new GridLayout(10, 1, 0, 20));
-        inputEmail = new JTextField("Email/No. Telepone");
+        inputNama = new JTextField("Nama");
         inputUsername = new JTextField("Username");
         inputPassword = new JTextField("Password");
         JButton btnUpdate = new JButton("Update");
-        JButton btnExit = new JButton("Keluar");
+        JButton btnExit = new JButton("Kembali");
 
         JPanel contKamar = new JPanel(null);
 
@@ -97,7 +97,7 @@ public class EditUser extends JFrame {
         inputID.setBounds(7, 80, 240, 50);
         btnSearchID.setFont(new Font("Inter", Font.BOLD, 32));
         btnSearchID.setBounds(250, 80, 80, 50);
-        inputEmail.setFont(new Font("Inter", Font.ITALIC, 20));
+        inputNama.setFont(new Font("Inter", Font.ITALIC, 20));
         inputUsername.setFont(new Font("Inter", Font.ITALIC, 20));
         inputPassword.setFont(new Font("Inter", Font.ITALIC, 20));
         btnUpdate.setFont(new Font("Inter", Font.BOLD, 32));
@@ -118,18 +118,20 @@ public class EditUser extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String userID = inputID.getText();
-                String email = inputEmail.getText();
+                String name = inputNama.getText();
                 String username = inputUsername.getText();
                 String password = inputPassword.getText();
 
-                updateUser(userID, email, username, password);
+                updateUser(userID, name, username, password);
             }
         });
 
         btnExit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                Admin admin = new Admin();
+                admin.setVisible(true);
+                dispose();
             }
         });
 
@@ -152,13 +154,13 @@ public class EditUser extends JFrame {
             }
         });
 
-        inputEmail.addKeyListener(new KeyListener() {
+        inputNama.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if (inputEmail.getText().equals("Email/No. Telepone")) {
-                    inputEmail.setText("");
-                } else if (inputEmail.getText().equals("")) {
-                    inputEmail.setText("Email/No. Telepone");
+                if (inputNama.getText().equals("Name")) {
+                    inputNama.setText("");
+                } else if (inputNama.getText().equals("")) {
+                    inputNama.setText("Name");
                 }
             }
 
@@ -237,10 +239,10 @@ public class EditUser extends JFrame {
         contJam.add(dateLabel);
         contJam.add(timeLabel);
         contDetails.add(labelIDSearch);
-        contDetails.add(inputID); // Use the correct inputID
+        contDetails.add(inputID);
         contDetails.add(btnSearchID);
         contButton.add(new JLabel());
-        contButton.add(inputEmail);
+        contButton.add(inputNama);
         contButton.add(inputUsername);
         contButton.add(inputPassword);
         contButton.add(new JLabel());
@@ -282,7 +284,7 @@ public class EditUser extends JFrame {
             ResultSet resultSet = preparedStatement.executeQuery();
             
             if (resultSet.next()) {
-                inputEmail.setText(resultSet.getString("email"));
+                inputNama.setText(resultSet.getString("name"));
                 inputUsername.setText(resultSet.getString("username"));
                 inputPassword.setText(resultSet.getString("password"));
             } else {
@@ -295,12 +297,11 @@ public class EditUser extends JFrame {
         }
     }
     
-
-    private void updateUser(String userID, String email, String username, String password) {
+    private void updateUser(String userID, String name, String username, String password) {
         try {
-            String query = "UPDATE dataUser SET email = ?, username = ?, password = ? WHERE userId = ?";
+            String query = "UPDATE dataUser SET name = ?, username = ?, password = ? WHERE userId = ?";
             PreparedStatement preparedStatement = con.getConnection().prepareStatement(query);
-            preparedStatement.setString(1, email);
+            preparedStatement.setString(1, name);
             preparedStatement.setString(2, username);
             preparedStatement.setString(3, password);
             preparedStatement.setString(4, userID);
