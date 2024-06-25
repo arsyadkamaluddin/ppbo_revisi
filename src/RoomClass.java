@@ -26,22 +26,6 @@ public class RoomClass {
         this.jumlahmalam = jumlahmalam;
         
     }
-
-    public String getRoomNumber() {
-        return roomNumber;
-    }
-    public boolean isAc() {
-        return ac;
-    }
-    public boolean isDoubleBed() {
-        return doubleBed;
-    }
-    public boolean isAvailable() {
-        return available;
-    }
-    public int getPrice() {
-        return price;
-    }
    public JPanel createCard(){
        JPanel container = new JPanel();
        JPanel contLeft = new JPanel();

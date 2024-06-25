@@ -33,6 +33,8 @@ public class Admin extends JFrame{
     private DefaultTableModel dataTblUser;
     private JLabel dataKamar = new JLabel();
     private JLabel dataPengunjung = new JLabel();
+    private JTextField inputNomor = new JTextField("Nomor Kamar ");
+    private JTextField inputHarga = new JTextField("Harga ");
     
     public Admin(){
         try {
@@ -48,15 +50,17 @@ public class Admin extends JFrame{
     private void updateTable(){
         try{
             statement.executeQuery("CALL update_stat('"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"')");
-            String query = "SELECT * FROM dataKamar";
+            String query = "SELECT * FROM dataKamar ORDER BY nomorKamar";
             dataFromDB = statement.executeQuery(query);
+            dataTblKamar.setRowCount(0);
             while(dataFromDB.next()){
                 dataTblKamar.addRow(new Object[]{dataFromDB.getString(2),dataFromDB.getInt(3)==2?"Double":"Single",dataFromDB.getInt(4)==0?"NON-AC":"AC",dataFromDB.getString(5),dataFromDB.getInt(6)});
             }
-            query = "SELECT * FROM dataUser";
+            query = "SELECT * FROM dataUser ORDER BY name";
             dataFromDB = statement.executeQuery(query);
+            dataTblUser.setRowCount(0);
             while(dataFromDB.next()){
-                dataTblUser.addRow(new Object[]{dataFromDB.getString(1),dataFromDB.getString(2),dataFromDB.getString(3)});
+                dataTblUser.addRow(new Object[]{dataFromDB.getString(2),dataFromDB.getString(3),dataFromDB.getString(4)});
             }
             query = "SELECT COUNT(nomorKamar) FROM dataKamar WHERE status!='Used'";
             dataFromDB = statement.executeQuery(query);
@@ -73,7 +77,37 @@ public class Admin extends JFrame{
             System.out.println(e.toString());
         }
     }
-    
+    public class CustomCheckBoxIcon implements Icon {
+        private int size;
+        
+
+        public CustomCheckBoxIcon(int size) {
+            this.size = size;
+        }
+
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            JCheckBox cb = (JCheckBox) c;
+            if (cb.isSelected()) {
+                g.setColor(Color.BLACK);
+                g.fillArc(x,y,size-1,size-1,0,360);
+            } else {
+                g.setColor(Color.WHITE);
+                g.fillArc(x,y,size-1,size-1,0,360);
+            }
+        }
+
+        @Override
+        public int getIconWidth() {
+            return size;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return size;
+        }
+    }
+
     private void init(){
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
@@ -96,13 +130,13 @@ public class Admin extends JFrame{
         JButton btnUser = new JButton("Edit User");
         JButton btnKamar = new JButton("Edit Kamar");
         JButton btnTambah = new JButton("Tambah");
+        JButton btnRiwayat = new JButton("Transaksi");
         JButton btnExit = new JButton("Keluar");
 
-        JTextField inputNomor = new JTextField("Nomor Kamar ");
-        JTextField inputHarga = new JTextField("Harga ");
+        
 
         dataTblKamar = new DefaultTableModel(new Object[][]{},new String[]{"Nomor","Ranjang","AC","Status","Harga"});
-        dataTblUser = new DefaultTableModel(new Object[][]{},new String[]{"Nama","NIK","NO Telepon"});
+        dataTblUser = new DefaultTableModel(new Object[][]{},new String[]{"Nama","NIK","No Telepon"});
         tabelKamar = new JTable(dataTblKamar);
         tabelKamar.disable();
         tabelKamar.setRowHeight(30);
@@ -131,7 +165,8 @@ public class Admin extends JFrame{
         contMain.setBounds(67,200,1120,650);
 
         contOpsi.setPreferredSize(new Dimension(290,60));
-        contOpsi.setLayout(new BoxLayout(contOpsi, BoxLayout.X_AXIS));
+        // contOpsi.setLayout(new GridLayout(1,2));
+        contOpsi.setBorder(BorderFactory.createEmptyBorder(7, 5, 5, 5));
        
         labelNama.setBounds(350,0, WindowSize.width-700,160);
         labelNama.setFont(new Font("Inter", Font.BOLD,48));
@@ -153,8 +188,15 @@ public class Admin extends JFrame{
         btnTambah.setFont(new Font("Inter", Font.BOLD,32));
         btnKamar.setFont(new Font("Inter", Font.BOLD,32));
         btnExit.setFont(new Font("Inter", Font.BOLD,32));
+        btnRiwayat.setFont(new Font("Inter", Font.BOLD,32));
         inputNomor.setFont(new Font("Inter", Font.ITALIC,20));
         inputHarga.setFont(new Font("Inter", Font.ITALIC,20));
+
+        cekAc.setIcon(new CustomCheckBoxIcon(20));
+        cekDouble.setIcon(new CustomCheckBoxIcon(20));
+        cekAc.setFont(new Font("Inter", Font.ITALIC,20));
+        cekDouble.setFont(new Font("Inter", Font.ITALIC,20));
+
 
         btnUser.addActionListener(new ActionListener() {
             @Override
@@ -189,6 +231,14 @@ public class Admin extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 Home home = new Home();
+                home.setVisible(true);
+                dispose();
+            }
+        });
+        btnRiwayat.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                RiwayatTransaksi home = new RiwayatTransaksi();
                 home.setVisible(true);
                 dispose();
             }
@@ -240,6 +290,16 @@ public class Admin extends JFrame{
                 }
             }
         });
+        btnTambah.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                if(inputHarga.getText()=="Harga "&&inputNomor.getText()=="Nomor Kamar "){
+                    JOptionPane.showMessageDialog(null, "Isikan data yang valid");
+                }else{
+                    JOptionPane.showMessageDialog(null, "Kamar "+inputNomor.getText()+" berhasil ditambahkan");
+                    addRoom(Integer.valueOf(inputNomor.getText()),Integer.valueOf(inputHarga.getText()),cekAc.isSelected(),cekDouble.isSelected());
+                }
+            }
+        });
         
         timeLabel.setFont(new Font("Inter", Font.BOLD,20));
         timeLabel.setBounds(67,30,230,50);
@@ -259,6 +319,9 @@ public class Admin extends JFrame{
         contJam.add(dateLabel);
         contJam.add(timeLabel);
 
+        contOpsi.add(cekAc);
+        contOpsi.add(cekDouble);
+
         contDetails.add(labelKamar);
         contDetails.add(labelPengunjung);
         contDetails.add(dataKamar);
@@ -274,7 +337,7 @@ public class Admin extends JFrame{
         contButton.add(inputHarga);
         contButton.add(contOpsi);
         contButton.add(btnTambah);
-        contButton.add(new JLabel());
+        contButton.add(btnRiwayat);
         contButton.add(btnExit);
 
 
@@ -290,6 +353,26 @@ public class Admin extends JFrame{
         setLayout(null);
         getContentPane().setBackground(warna);
         setVisible(true);
+    }
+
+    private void addRoom(int roomNumber,int price,boolean ac,boolean bed){
+        int ranjang = bed?2:1;
+        int ase = ac?1:0;
+        try {
+            String query = "INSERT INTO dataKamar (nomorKamar,ranjang,ac,status,harga) VALUES ('"+Integer.toString(roomNumber)+"','"+ranjang+"','"+ase+"','Available','"+price+"')";
+            statement.executeUpdate(query);
+            updateTable();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null,"Kamar dengan nomor "+Integer.toString(roomNumber)+" telah ada");
+        }
+        resetForm();
+    }
+
+    public void resetForm(){
+        cekAc.setSelected(false);
+        cekDouble.setSelected(false);
+        inputHarga.setText("Harga ");
+        inputNomor.setText("Nomor Kamar ");
     }
 
     private void updateTime() {

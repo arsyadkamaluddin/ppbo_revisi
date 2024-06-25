@@ -23,6 +23,7 @@ public class Pembayaran extends JFrame {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
 
     public Pembayaran() {
+<<<<<<< HEAD
 //        try {
 //            con = new DbConnect();
 //            statement = con.getConnection().createStatement();
@@ -35,6 +36,20 @@ public class Pembayaran extends JFrame {
 //        } catch (SQLException e) {
 //            System.out.println(e.toString());
 //        }
+=======
+        try {
+            con = new DbConnect();
+            statement = con.getConnection().createStatement();
+            dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
+            // while (dataFromDB.next()) {
+            //     RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
+            //     daftarKamar.add(baru);
+            // }
+            System.out.println(daftarKamar.size());
+        } catch (SQLException e) {
+            System.out.println(e.toString());
+        }
+>>>>>>> aa122b8c7ff172cb9e567711c8357f9b8c3e0cb4
         init();
     }
 

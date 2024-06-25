@@ -144,7 +144,7 @@ public class Home extends JFrame{
         JLabel dataPengunjung = new JLabel("20");
 
         JButton btnAdmin = new JButton("Admin");
-        JButton btnCustomers = new JButton("Bookings");
+        JButton btnBookings = new JButton("Bookings");
         JButton btnRooms = new JButton("Rooms");
         JButton btnLogout = new JButton("Logout");
         JButton btnExit = new JButton("Keluar");
@@ -206,7 +206,7 @@ public class Home extends JFrame{
 
         btnAdmin.setFont(new Font("Inter", Font.BOLD,32));
         btnRooms.setFont(new Font("Inter", Font.BOLD,32));
-        btnCustomers.setFont(new Font("Inter", Font.BOLD,32));
+        btnBookings.setFont(new Font("Inter", Font.BOLD,32));
         btnExit.setFont(new Font("Inter", Font.BOLD,32));
         btnLogout.setFont(new Font("Inter", Font.BOLD,32));
         labelMasuk.setFont(new Font("Inter", Font.ITALIC,20));
@@ -257,6 +257,20 @@ public class Home extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 try{
                     AdminLogin halo = new AdminLogin();
+                    halo.setVisible(true);
+                    halo.setLocationRelativeTo(null);
+                    dispose();
+                }catch (Exception err){
+
+                }
+
+            }
+        });
+        btnBookings.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    DaftarBooking halo = new DaftarBooking();
                     halo.setVisible(true);
                     halo.setLocationRelativeTo(null);
                     dispose();
@@ -388,7 +402,7 @@ public class Home extends JFrame{
         contDetails.add(dataPengunjung);
 
         contButton.add(btnAdmin);
-        contButton.add(btnCustomers);
+        contButton.add(btnBookings);
         contButton.add(btnRooms);
         contButton.add(new JLabel());
         contButton.add(inputIn);

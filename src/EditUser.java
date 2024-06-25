@@ -257,6 +257,12 @@ public class EditUser extends JFrame {
         timeLabel.setText(currentTime);
         dateLabel.setText(currentDate);
     }
+    private void resetForm(){
+        inputID.setText("Masukkan ID...");
+        inputNama.setText("Nama");
+        inputUsername.setText("Username");
+        inputPassword.setText("Password");
+    }
 
     private void fetchUserData(String userID) {
         System.out.println("Fetching data for userID: " + userID);
@@ -277,7 +283,9 @@ public class EditUser extends JFrame {
             JOptionPane.showMessageDialog(this, "Error fetching user data.", "Error", JOptionPane.ERROR_MESSAGE);
             System.out.println("SQLException: " + e.getMessage());
             e.printStackTrace();
+            resetForm();
         }
+        
     }
     
     private void updateUser(String userID, String name, String username, String password) {
@@ -305,6 +313,7 @@ public class EditUser extends JFrame {
             updateStatusLabel.setForeground(Color.RED);
             e.printStackTrace();
         }
+        resetForm();
     }
 
     private void updateTableData() {
