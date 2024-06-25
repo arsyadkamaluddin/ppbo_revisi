@@ -3,6 +3,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
+
 import javax.swing.*;
 public class RoomClass {
     private String roomNumber;
@@ -10,12 +12,19 @@ public class RoomClass {
     private boolean ac;
     private boolean available;
     private int price;
+    private Date masuk;
+    private Date keluar;
+    private int jumlahmalam;
 
-    public RoomClass(String roomNumber,int bed,int ac,int price){
+    public RoomClass(String roomNumber,int bed,int ac,int price,Date masuk,Date keluar){
         this.roomNumber = roomNumber;
         this.doubleBed = bed==2;
         this.ac = ac==1;
         this.price = price;
+        this.masuk = masuk;
+        this.keluar = keluar;
+        this.jumlahmalam = jumlahmalam;
+        
     }
 
     public String getRoomNumber() {
@@ -71,7 +80,9 @@ public class RoomClass {
 
        container.addMouseListener(new MouseAdapter() {
         public void mouseClicked(MouseEvent me){
-            System.out.println(roomNumber);
+            int nomor = Integer.parseInt(roomNumber);
+            Booking book = new Booking(nomor,masuk,keluar);
+            book.setVisible(true);
         }
         public void mouseEntered(MouseEvent me){
             container.setBackground(Color.darkGray);

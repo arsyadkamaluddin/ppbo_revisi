@@ -11,34 +11,48 @@ import java.util.Date;
 import java.util.Locale;
 import javax.swing.border.EmptyBorder;
 
-public class Booking extends JFrame {
+public class Booking extends BookingBase {
     ResultSet dataFromDB = null;
     Statement statement = null;
     DbConnect con = null;
     private ArrayList<RoomClass> daftarKamar = new ArrayList<RoomClass>();
-    private JLabel timeLabel = new JLabel();
-    private JLabel dateLabel = new JLabel();
     private JScrollPane contKamar = new JScrollPane();
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
+    private String nama;
+    private int nomorKamar;
+    private int harga;
+    private Date masuk;
+    private Date keluar;
+    private long jumlahmalam;
+    private long totalharga;
+    private int ranjang;
+    private int ac;
 
-    public Booking() {
-        try {
-            con = new DbConnect();
-            statement = con.getConnection().createStatement();
-            dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
-            while (dataFromDB.next()) {
-                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
-                daftarKamar.add(baru);
-            }
-            System.out.println(daftarKamar.size());
-        } catch (SQLException e) {
-            System.out.println(e.toString());
-        }
+    public Booking(int nomorKamar,Date masuk,Date keluar) {
+       try {
+           con = new DbConnect();
+           statement = con.getConnection().createStatement();
+           dataFromDB = statement.executeQuery("SELECT * FROM dataKamar WHERE nomorKamar='"+nomorKamar+"'");
+           while (dataFromDB.next()) {
+//                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
+//                daftarKamar.add(baru);
+                    ranjang = dataFromDB.getInt("ranjang");
+                    ac = dataFromDB.getInt("ac");
+                    harga = dataFromDB.getInt(6);
+           }
+           System.out.println(daftarKamar.size());
+       } catch (SQLException e) {
+           System.out.println(e.toString());
+       }
+        this.nomorKamar=nomorKamar;
+        this.masuk = masuk;
+        this.keluar = keluar;
+        this.jumlahmalam = (keluar.getTime() - masuk.getTime())/ 1000 / 60 / 60 / 24;
+        this.totalharga = jumlahmalam*harga;
         init();
-    }
 
-    private void init() {
+    }
+    
+    protected void init() {
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Booking");
@@ -47,8 +61,10 @@ public class Booking extends JFrame {
         JPanel contKamar = new JPanel(null);
         JPanel contInput = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         JXDatePicker inputTanggal = new JXDatePicker(new Locale("id", "ID"));
-        JLabel labelNoKamar = new JLabel("    Kamar");
-        JLabel labelHarga = new JLabel("    Harga");
+        JLabel labelNoKamar = new JLabel("     "+String.valueOf(nomorKamar));
+        JLabel labelHarga = new JLabel("   "+String.valueOf(harga));
+        
+        
 
         contJam.setBounds(0, 0, 350, 160);
         contJam.setBackground(new Color(214, 217, 223));
@@ -79,12 +95,6 @@ public class Booking extends JFrame {
 
         btnExit.setFont(new Font("Inter", Font.BOLD, 32));
 
-        btnExit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
 
         labelNoKamar.setFont(new Font("Inter", Font.BOLD, 20));
         labelNoKamar.setBackground(new Color(146, 146, 146));
@@ -98,11 +108,7 @@ public class Booking extends JFrame {
         labelNoKamar.setOpaque(true);
         labelHarga.setOpaque(true);
 
-        timeLabel.setFont(new Font("Inter", Font.BOLD, 20));
-        timeLabel.setBounds(67, 30, 230, 50);
-
-        dateLabel.setFont(new Font("Inter", Font.BOLD, 20));
-        dateLabel.setBounds(67, 80, 230, 50);
+        
 
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
@@ -141,11 +147,27 @@ public class Booking extends JFrame {
 
         JTextField inputNamaPemesan = new JTextField();
         inputNamaPemesan.setPreferredSize(new Dimension(700, 34));
+        inputNamaPemesan.setText(this.nama);
         panelNamaPemesan.add(inputNamaPemesan);
+
+        JPanel panelNIK = new JPanel(null);
+        panelNIK.setLayout(new BoxLayout(panelNIK,BoxLayout.X_AXIS));
+        panelNIK.setBounds(50, 130, 1020, 38);
+        panelNIK.setBackground(new Color(146, 146, 146));
+        panelNIK.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
+
+        JLabel labelNIK = new JLabel("NIK");
+        labelNIK.setFont(new Font("Inter", Font.BOLD, 20));
+        labelNIK.setPreferredSize(new Dimension(200,30));
+        panelNIK.add(labelNIK);
+
+        JTextField inputNIK = new JTextField();
+        inputNIK.setPreferredSize(new Dimension(700, 34));
+        panelNIK.add(inputNIK);
 
         JPanel panelTelepon = new JPanel(null);
         panelTelepon.setLayout(new BoxLayout(panelTelepon,BoxLayout.X_AXIS));
-        panelTelepon.setBounds(50, 130, 1020, 38);
+        panelTelepon.setBounds(50, 175, 1020, 38);
         panelTelepon.setBackground(new Color(146, 146, 146));
         panelTelepon.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
 
@@ -157,21 +179,6 @@ public class Booking extends JFrame {
         JTextField inputTelepon = new JTextField();
         inputTelepon.setPreferredSize(new Dimension(700, 34));
         panelTelepon.add(inputTelepon);
-
-        JPanel panelPassword = new JPanel(null);
-        panelPassword.setLayout(new BoxLayout(panelPassword,BoxLayout.X_AXIS));
-        panelPassword.setBounds(50, 175, 1020, 38);
-        panelPassword.setBackground(new Color(146, 146, 146));
-        panelPassword.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
-
-        JLabel labelPassword = new JLabel("Password");
-        labelPassword.setFont(new Font("Inter", Font.BOLD, 20));
-        labelPassword.setPreferredSize(new Dimension(200,30));
-        panelPassword.add(labelPassword);
-
-        JTextField inputPassword = new JTextField();
-        inputPassword.setPreferredSize(new Dimension(700, 34));
-        panelPassword.add(inputPassword);
 
         JPanel panelCheckin = new JPanel(null);
         panelCheckin.setLayout(new BoxLayout(panelCheckin,BoxLayout.X_AXIS));
@@ -187,6 +194,8 @@ public class Booking extends JFrame {
         JTextField inputCheckin = new JTextField();
         inputCheckin.setPreferredSize(new Dimension(700, 34));
         panelCheckin.add(inputCheckin);
+        inputCheckin.disable();
+        inputCheckin.setText(new SimpleDateFormat("yyyy-MM-dd").format(masuk));
 
         JPanel panelCheckout = new JPanel(null);
         panelCheckout.setLayout(new BoxLayout(panelCheckout,BoxLayout.X_AXIS));
@@ -202,6 +211,8 @@ public class Booking extends JFrame {
         JTextField inputCheckout = new JTextField();
         inputCheckout.setPreferredSize(new Dimension(700, 34));
         panelCheckout.add(inputCheckout);
+        inputCheckout.disable();
+        inputCheckout.setText(new SimpleDateFormat("yyyy-MM-dd").format(keluar));
 
         JPanel panelJumlahmalam = new JPanel(null);
         panelJumlahmalam.setLayout(new BoxLayout(panelJumlahmalam,BoxLayout.X_AXIS));
@@ -214,9 +225,13 @@ public class Booking extends JFrame {
         labelJumlahmalam.setPreferredSize(new Dimension(200,30));
         panelJumlahmalam.add(labelJumlahmalam);
 
+
         JTextField inputJumlahmalam = new JTextField();
         inputJumlahmalam.setPreferredSize(new Dimension(700, 34));
         panelJumlahmalam.add(inputJumlahmalam);
+        inputJumlahmalam.disable();
+        inputJumlahmalam.setText(Long.toString(jumlahmalam));
+
 
         JPanel panelTipeKamar = new JPanel();
         panelTipeKamar.setLayout(new BoxLayout(panelTipeKamar, BoxLayout.Y_AXIS));
@@ -232,36 +247,51 @@ public class Booking extends JFrame {
         labelTipeKamar.setPreferredSize(new Dimension(200, 30));
         labelTipeKamar.setAlignmentY(Component.CENTER_ALIGNMENT);
         labelAndCheckBoxPanel.add(labelTipeKamar);
-
-        labelAndCheckBoxPanel.add(Box.createHorizontalStrut(20));
+        labelTipeKamar.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
         JPanel checkBoxPanel = new JPanel();
         checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.Y_AXIS));
         checkBoxPanel.setBackground(new Color(146, 146, 146));
 
+        checkBoxPanel.setBorder(BorderFactory.createEmptyBorder(0, 150, 0, 0));
+
+        ButtonGroup acGroup = new ButtonGroup();
         JCheckBox acCheckBox = new JCheckBox("AC");
         acCheckBox.setBackground(new Color(146, 146, 146));
+        // acGroup.add(acCheckBox);
         checkBoxPanel.add(acCheckBox);
 
-        JCheckBox singleCheckBox = new JCheckBox("Single");
-        singleCheckBox.setBackground(new Color(146, 146, 146));
-        checkBoxPanel.add(singleCheckBox);
+        JCheckBox nonAcCheckBox = new JCheckBox("Non AC");
+        nonAcCheckBox.setBackground(new Color(146, 146, 146));
+        // acGroup.add(nonAcCheckBox);
+        checkBoxPanel.add(nonAcCheckBox);
+
+        acCheckBox.setSelected(ac>0?true:false);
+        nonAcCheckBox.setSelected(ac==0?true:false);
 
         labelAndCheckBoxPanel.add(checkBoxPanel);
 
-        labelAndCheckBoxPanel.add(Box.createHorizontalStrut(400));
+        labelAndCheckBoxPanel.add(Box.createHorizontalStrut(300));
 
         JPanel checkBoxPanel2 = new JPanel();
         checkBoxPanel2.setLayout(new BoxLayout(checkBoxPanel2, BoxLayout.Y_AXIS));
         checkBoxPanel2.setBackground(new Color(146, 146, 146));
 
-        JCheckBox nonAcCheckBox = new JCheckBox("Non AC");
-        nonAcCheckBox.setBackground(new Color(146, 146, 146));
-        checkBoxPanel2.add(nonAcCheckBox);
+        checkBoxPanel2.setBorder(BorderFactory.createEmptyBorder(0, 150, 0, 0));
+
+        ButtonGroup bedGroup = new ButtonGroup();
+        JCheckBox singleCheckBox = new JCheckBox("Single");
+        singleCheckBox.setBackground(new Color(146, 146, 146));
+        bedGroup.add(singleCheckBox);
+        checkBoxPanel2.add(singleCheckBox);
 
         JCheckBox doubleCheckBox = new JCheckBox("Double");
         doubleCheckBox.setBackground(new Color(146, 146, 146));
+        bedGroup.add(doubleCheckBox);
         checkBoxPanel2.add(doubleCheckBox);
+
+        singleCheckBox.setSelected(ranjang==1?true:false);
+        doubleCheckBox.setSelected(ranjang>1?true:false);
 
         labelAndCheckBoxPanel.add(checkBoxPanel2);
 
@@ -285,6 +315,8 @@ public class Booking extends JFrame {
         JTextField inputTotalHarga = new JTextField();
         inputTotalHarga.setPreferredSize(new Dimension(700, 34));
         panelTotalHarga.add(inputTotalHarga);
+        inputTotalHarga.disable();
+        inputTotalHarga.setText(Long.toString(totalharga));
 
         JPanel panelNext = new JPanel();
         panelNext.setLayout(new BoxLayout(panelNext, BoxLayout.Y_AXIS));
@@ -295,6 +327,30 @@ public class Booking extends JFrame {
         btnNext.setBackground(Color.WHITE);
         btnNext.setPreferredSize(new Dimension(300, 100));
 
+        btnExit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Home home = new Home();
+                home.setVisible(true);
+                dispose();
+            }
+        });
+
+        btnNext.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    DetailBooking detail = new DetailBooking();
+                    detail.setVisible(true);
+                    detail.setLocationRelativeTo(null);
+                    dispose();
+                } catch (Exception err) {
+                    err.printStackTrace();
+                }
+            }
+        });
+
+
         panelNext.add(Box.createVerticalGlue());
         panelNext.add(btnNext);
         panelNext.add(Box.createVerticalGlue());
@@ -304,8 +360,8 @@ public class Booking extends JFrame {
         contKamar.setVisible(true);
 
         contKamar.add(panelNamaPemesan);
+        contKamar.add(panelNIK);
         contKamar.add(panelTelepon);
-        contKamar.add(panelPassword);
         contKamar.add(panelCheckin);
         contKamar.add(panelCheckout);
         contKamar.add(panelJumlahmalam);
@@ -313,26 +369,27 @@ public class Booking extends JFrame {
         contKamar.add(panelTotalHarga);
         contKamar.add(panelNext);
 
-        add(contJam);
-        add(contDetails);
-        add(labelNama);
-        add(contButton);
-        add(contKamar);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(WindowSize.width, WindowSize.heigth);
-        setUndecorated(true);
-        setLayout(null);
-        getContentPane().setBackground(Color.WHITE);
-        setVisible(true);
+        super.add(contJam);
+        super.add(contDetails);
+        super.add(labelNama);
+        super.add(contButton);
+        super.add(contKamar);
+        super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        super.setSize(WindowSize.width, WindowSize.heigth);
+        super.setUndecorated(true);
+        super.setLayout(null);
+        super.getContentPane().setBackground(Color.WHITE);
+        super.setVisible(true);
     }
 
 
-    private void updateTime() {
+    protected void updateTime() {
         String currentTime = timeFormat.format(new Date());
         String currentDate = dateFormat.format(new Date());
         timeLabel.setText(currentTime);
         dateLabel.setText(currentDate);
     }
+
 
     public static void main(String[] args) {
         try {
@@ -347,9 +404,12 @@ public class Booking extends JFrame {
             System.out.println(e.toString());
         }
         try {
-            Booking halo = new Booking();
+            Booking halo = new Booking(100, new Date(), new Date());
         } catch (Exception e) {
             System.out.println(e.toString());
         }
+
+
     }
+
 }

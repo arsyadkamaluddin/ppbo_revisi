@@ -28,8 +28,8 @@ public class DetailBooking extends JFrame {
             statement = con.getConnection().createStatement();
             dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
             while (dataFromDB.next()) {
-                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
-                daftarKamar.add(baru);
+//                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
+//               daftarKamar.add(baru);
             }
             System.out.println(daftarKamar.size());
         } catch (SQLException e) {
@@ -232,35 +232,44 @@ public class DetailBooking extends JFrame {
         labelTipeKamar.setPreferredSize(new Dimension(200, 30));
         labelTipeKamar.setAlignmentY(Component.CENTER_ALIGNMENT);
         labelAndCheckBoxPanel.add(labelTipeKamar);
-
-        labelAndCheckBoxPanel.add(Box.createHorizontalStrut(20));
+        labelTipeKamar.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
 
         JPanel checkBoxPanel = new JPanel();
         checkBoxPanel.setLayout(new BoxLayout(checkBoxPanel, BoxLayout.Y_AXIS));
         checkBoxPanel.setBackground(new Color(146, 146, 146));
 
+        checkBoxPanel.setBorder(BorderFactory.createEmptyBorder(0, 150, 0, 0));
+
+        ButtonGroup acGroup = new ButtonGroup();
         JCheckBox acCheckBox = new JCheckBox("AC");
         acCheckBox.setBackground(new Color(146, 146, 146));
+        acGroup.add(acCheckBox);
         checkBoxPanel.add(acCheckBox);
 
-        JCheckBox singleCheckBox = new JCheckBox("Single");
-        singleCheckBox.setBackground(new Color(146, 146, 146));
-        checkBoxPanel.add(singleCheckBox);
+        JCheckBox nonAcCheckBox = new JCheckBox("Non AC");
+        nonAcCheckBox.setBackground(new Color(146, 146, 146));
+        acGroup.add(nonAcCheckBox);
+        checkBoxPanel.add(nonAcCheckBox);
 
         labelAndCheckBoxPanel.add(checkBoxPanel);
 
-        labelAndCheckBoxPanel.add(Box.createHorizontalStrut(400));
+        labelAndCheckBoxPanel.add(Box.createHorizontalStrut(300));
 
         JPanel checkBoxPanel2 = new JPanel();
         checkBoxPanel2.setLayout(new BoxLayout(checkBoxPanel2, BoxLayout.Y_AXIS));
         checkBoxPanel2.setBackground(new Color(146, 146, 146));
 
-        JCheckBox nonAcCheckBox = new JCheckBox("Non AC");
-        nonAcCheckBox.setBackground(new Color(146, 146, 146));
-        checkBoxPanel2.add(nonAcCheckBox);
+        checkBoxPanel2.setBorder(BorderFactory.createEmptyBorder(0, 150, 0, 0));
+
+        ButtonGroup bedGroup = new ButtonGroup();
+        JCheckBox singleCheckBox = new JCheckBox("Single");
+        singleCheckBox.setBackground(new Color(146, 146, 146));
+        bedGroup.add(singleCheckBox);
+        checkBoxPanel2.add(singleCheckBox);
 
         JCheckBox doubleCheckBox = new JCheckBox("Double");
         doubleCheckBox.setBackground(new Color(146, 146, 146));
+        bedGroup.add(doubleCheckBox);
         checkBoxPanel2.add(doubleCheckBox);
 
         labelAndCheckBoxPanel.add(checkBoxPanel2);

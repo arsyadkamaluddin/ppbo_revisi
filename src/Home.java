@@ -38,6 +38,9 @@ public class Home extends JFrame{
         } catch (SQLException e) {
             System.out.println(e);
         }
+        
+        inputMasuk.setDate(new Date());
+        inputKeluar.setDate(new Date());
         updateKamar();
         init();
         
@@ -47,7 +50,7 @@ public class Home extends JFrame{
         try{
             dataFromDB = statement.executeQuery(query);
             while(dataFromDB.next()){
-                RoomClass baru = new RoomClass(dataFromDB.getString(1),dataFromDB.getInt(2),dataFromDB.getInt(3),dataFromDB.getInt(4));
+                RoomClass baru = new RoomClass(dataFromDB.getString(1),dataFromDB.getInt(2),dataFromDB.getInt(3),dataFromDB.getInt(4),inputMasuk.getDate(),inputKeluar.getDate());
                 daftarKamar.add(baru);
             }
         }catch (SQLException e){
@@ -70,7 +73,7 @@ public class Home extends JFrame{
         try{
             dataFromDB = statement.executeQuery(query);
             while(dataFromDB.next()){
-                RoomClass baru = new RoomClass(dataFromDB.getString(1),dataFromDB.getInt(2),dataFromDB.getInt(3),dataFromDB.getInt(4));
+                RoomClass baru = new RoomClass(dataFromDB.getString(1),dataFromDB.getInt(2),dataFromDB.getInt(3),dataFromDB.getInt(4),inputMasuk.getDate(),inputKeluar.getDate());
                 daftarKamar.add(baru);
             }
         }catch (SQLException e){
@@ -113,12 +116,12 @@ public class Home extends JFrame{
                 g.fillArc(x,y,size-1,size-1,0,360);
             }
         }
-
+        
         @Override
         public int getIconWidth() {
             return size;
         }
-
+        
         @Override
         public int getIconHeight() {
             return size;
@@ -223,14 +226,12 @@ public class Home extends JFrame{
         inputMasuk.setBorder(BorderFactory.createEmptyBorder(10,0,20,0));
         inputMasuk.setBackground(Color.RED);
         inputMasuk.setFont(new Font("Inter", Font.ITALIC,20));
-        inputMasuk.setDate(new Date());
         
         inputKeluar.setBounds(0,0,100,100);
         inputKeluar.getEditor().setEditable(false);
         inputKeluar.setBorder(BorderFactory.createEmptyBorder(10,0,20,0));
         inputKeluar.setBackground(Color.RED);
         inputKeluar.setFont(new Font("Inter", Font.ITALIC,20));
-        inputKeluar.setDate(new Date());
 
         for(RoomClass kamar:daftarKamar){
             contKamar.add(kamar.createCard());
@@ -269,6 +270,8 @@ public class Home extends JFrame{
         btnExit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+
                 System.exit(0);
             }
         });
