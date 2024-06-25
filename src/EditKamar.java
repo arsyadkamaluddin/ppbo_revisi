@@ -70,6 +70,7 @@ public class EditKamar extends JFrame {
         JPanel contAC = new JPanel(new GridLayout(1, 2, 20, 0));
         JPanel contBed = new JPanel(new GridLayout(1, 2, 20, 0));
         inputHarga = new JTextField("Harga");
+        JButton btnDelete = new JButton("Delete");
         JButton btnUpdate = new JButton("Update");
         JButton btnExit = new JButton("Kembali");
 
@@ -107,6 +108,7 @@ public class EditKamar extends JFrame {
         btnSearchNoKmr.setFont(new Font("Inter", Font.BOLD, 32));
         btnSearchNoKmr.setBounds(250, 80, 80, 50);
         inputHarga.setFont(new Font("Inter", Font.ITALIC, 20));
+        btnDelete.setFont(new Font("Inter", Font.BOLD, 32));
         btnUpdate.setFont(new Font("Inter", Font.BOLD, 32));
         btnExit.setFont(new Font("Inter", Font.BOLD, 32));
 
@@ -150,7 +152,14 @@ public class EditKamar extends JFrame {
         
                 updateUser(nomorKamar, ranjang, ac, harga);
             }
-        });        
+        });    
+        btnDelete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nomorKamar = inputID.getText();
+                deleteKamar(nomorKamar);
+            }
+        });       
 
         btnExit.addActionListener(new ActionListener() {
             @Override
@@ -239,7 +248,7 @@ public class EditKamar extends JFrame {
         contButton.add(inputHarga);
         contButton.add(new JLabel());
         contButton.add(new JLabel());
-        contButton.add(new JLabel());
+        contButton.add(btnDelete);
         contButton.add(btnUpdate);
         contButton.add(btnExit);
 
@@ -346,6 +355,53 @@ public class EditKamar extends JFrame {
                 e.printStackTrace();
             }
         }
+        
+        private void deleteKamar(String nomorKamar) {
+            try {
+                String getStatusQuery = "SELECT status FROM datakamar WHERE nomorKamar = ?";
+                PreparedStatement getStatusStatement = con.getConnection().prepareStatement(getStatusQuery);
+                getStatusStatement.setString(1, nomorKamar);
+                ResultSet statusResult = getStatusStatement.executeQuery();
+                
+                if (statusResult.next()) {
+                    String status = statusResult.getString("status");
+                    
+                    if ("available".equalsIgnoreCase(status)) {
+                        String deleteQuery = "DELETE FROM datakamar WHERE nomorKamar = ?";
+                        PreparedStatement preparedStatement = con.getConnection().prepareStatement(deleteQuery);
+                        preparedStatement.setString(1, nomorKamar);
+                
+                        int rowsDeleted = preparedStatement.executeUpdate();
+                        if (rowsDeleted > 0) {
+                            JOptionPane.showMessageDialog(this, "Data kamar dengan nomor " + nomorKamar + " berhasil dihapus.");
+                            updateStatusLabel.setText("Data berhasil dihapus.");
+                            updateStatusLabel.setForeground(Color.GREEN);
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Tidak ada data kamar dengan nomor " + nomorKamar + ".");
+                            updateStatusLabel.setText("Data tidak ditemukan.");
+                            updateStatusLabel.setForeground(Color.ORANGE);
+                        }
+                        updateTableData();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Kamar dengan nomor " + nomorKamar + " tidak dapat dihapus karena tidak tersedia.");
+                        updateStatusLabel.setText("Kamar tidak dapat dihapus.");
+                        updateStatusLabel.setForeground(Color.RED);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Kamar dengan nomor " + nomorKamar + " tidak ditemukan.");
+                    updateStatusLabel.setText("Data tidak ditemukan.");
+                    updateStatusLabel.setForeground(Color.ORANGE);
+                }
+        
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error deleting room data: " + ex.getMessage());
+                updateStatusLabel.setText("Gagal menghapus data.");
+                updateStatusLabel.setForeground(Color.RED);
+                ex.printStackTrace();
+            }
+        }
+        
+        
         
         public static void main(String[] args) {
             try {
