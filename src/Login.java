@@ -107,7 +107,7 @@ public class Login extends JFrame{
             dataLoginFromDB = db.executeQuery(query);
 
             if (dataLoginFromDB.next()) {
-                if (dataLoginFromDB.getString(3).equals(inputPassword.getText())) {
+                if (dataLoginFromDB.getString(4).equals(inputPassword.getText())) {
                     Home o = new Home();
                     o.setVisible(true);
                     o.setLocationRelativeTo(null);

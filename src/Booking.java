@@ -27,10 +27,10 @@ public class Booking extends JFrame {
             con = new DbConnect();
             statement = con.getConnection().createStatement();
             dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
-            while (dataFromDB.next()) {
-                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
-                daftarKamar.add(baru);
-            }
+            // while (dataFromDB.next()) {
+            //     RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
+            //     daftarKamar.add(baru);
+            // }
             System.out.println(daftarKamar.size());
         } catch (SQLException e) {
             System.out.println(e.toString());
@@ -249,7 +249,7 @@ public class Booking extends JFrame {
 
         labelAndCheckBoxPanel.add(checkBoxPanel);
 
-        labelAndCheckBoxPanel.add(Box.createHorizontalStrut(400));
+        labelAndCheckBoxPanel.add(Box.createHorizontalStrut(400));z
 
         JPanel checkBoxPanel2 = new JPanel();
         checkBoxPanel2.setLayout(new BoxLayout(checkBoxPanel2, BoxLayout.Y_AXIS));

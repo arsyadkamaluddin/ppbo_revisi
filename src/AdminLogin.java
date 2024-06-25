@@ -82,7 +82,6 @@ public class AdminLogin extends JFrame{
             }
         });
 
-//        GroupLayout layout = new GroupLayout(getContentPane());
         GridLayout layout = new GridLayout(3,1,0,20);
         JPanel container = new JPanel();
         container.setBorder(BorderFactory.createEmptyBorder(50,50,0,50));
@@ -107,7 +106,7 @@ public class AdminLogin extends JFrame{
             dataLoginFromDB = db.executeQuery(query);
 
             if (dataLoginFromDB.next()) {
-                if (dataLoginFromDB.getString(3).equals(inputPassword.getText())) {
+                if (dataLoginFromDB.getString(4).equals(inputPassword.getText())) {
                     Admin o = new Admin();
                     o.setVisible(true);
                     o.setLocationRelativeTo(null);

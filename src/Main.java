@@ -8,7 +8,6 @@ public class Main {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
-                System.out.println(info.getName());
             }
         }catch (Exception e){
             System.out.println(e.toString());
