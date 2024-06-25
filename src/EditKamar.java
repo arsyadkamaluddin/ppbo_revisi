@@ -32,6 +32,9 @@ public class EditKamar extends JFrame {
     private JTextField inputHarga;
     private JLabel updateStatusLabel = new JLabel();
     private JTextField inputID;
+    private ButtonGroup bedGroup = new ButtonGroup();
+    private ButtonGroup acGroup = new ButtonGroup();
+
 
     public EditKamar() {
         try {
@@ -59,12 +62,20 @@ public class EditKamar extends JFrame {
         }
     }
 
+    private void resetForm(){
+        inputID.setText("Masukkan nomor kamar...");
+        bedGroup.clearSelection();
+        acGroup.clearSelection();
+        inputHarga.setText("Harga");
+        
+    }
+
     private void init() {
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Edit Kamar");
         JLabel labelKmrSearch = new JLabel("Nomor Kamar");
-        JTextField inputID = new JTextField("Masukkan nomor kamar...");
+        inputID = new JTextField("Masukkan nomor kamar...");
         JButton btnSearchNoKmr = new JButton(">>");
         JPanel contButton = new JPanel(new GridLayout(9, 1, 0, 20));
         JPanel contAC = new JPanel(new GridLayout(1, 2, 20, 0));
@@ -114,13 +125,12 @@ public class EditKamar extends JFrame {
 
         acButton = new JRadioButton("AC");
         nonAcButton = new JRadioButton("Non-AC");
-        ButtonGroup acGroup = new ButtonGroup();
         acGroup.add(acButton);
         acGroup.add(nonAcButton);
+        
 
         singleButton = new JRadioButton("Single");
         doubleButton = new JRadioButton("Double");
-        ButtonGroup bedGroup = new ButtonGroup();
         bedGroup.add(singleButton);
         bedGroup.add(doubleButton);
 
@@ -133,6 +143,11 @@ public class EditKamar extends JFrame {
         nonAcButton.setBounds(120, 10, 100, 30);
         singleButton.setBounds(10, 10, 100, 30);
         doubleButton.setBounds(120, 10, 100, 30);
+        
+        acButton.setSelected(false);
+        nonAcButton.setSelected(false);
+        singleButton.setSelected(false);
+        doubleButton.setSelected(false);
 
         btnSearchNoKmr.addActionListener(new ActionListener() {
             @Override
@@ -151,6 +166,7 @@ public class EditKamar extends JFrame {
                 int harga = Integer.parseInt(inputHarga.getText()); 
         
                 updateUser(nomorKamar, ranjang, ac, harga);
+                resetForm();
             }
         });    
         btnDelete.addActionListener(new ActionListener() {
@@ -326,13 +342,13 @@ public class EditKamar extends JFrame {
                     updateStatusLabel.setForeground(Color.ORANGE);
                 }
                 updateTableData();
-                
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, "Error updating room data: " + e.getMessage());
                 updateStatusLabel.setText("Update Gagal.");
                 updateStatusLabel.setForeground(Color.RED);
                 e.printStackTrace();
             }
+            resetForm();
         }
 
         private void updateTableData() {
@@ -383,7 +399,7 @@ public class EditKamar extends JFrame {
                         }
                         updateTableData();
                     } else {
-                        JOptionPane.showMessageDialog(this, "Kamar dengan nomor " + nomorKamar + " tidak dapat dihapus karena tidak tersedia.");
+                        JOptionPane.showMessageDialog(this, "Kamar dengan nomor " + nomorKamar + " tidak dapat dihapus karena kamar tidak tersedia.");
                         updateStatusLabel.setText("Kamar tidak dapat dihapus.");
                         updateStatusLabel.setForeground(Color.RED);
                     }
@@ -399,6 +415,7 @@ public class EditKamar extends JFrame {
                 updateStatusLabel.setForeground(Color.RED);
                 ex.printStackTrace();
             }
+            resetForm();
         }
         
         
