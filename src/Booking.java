@@ -339,13 +339,21 @@ public class Booking extends BookingBase {
                     String namaPemesan = inputNamaPemesan.getText();
                     String nik = inputNIK.getText();
                     String telepon = inputTelepon.getText();
+                    System.out.println(nik.length());
 
-                    DetailBooking detail = new DetailBooking(nomorKamar,harga, masuk, keluar, namaPemesan, nik, telepon);
-                    detail.setVisible(true);
-                    detail.setLocationRelativeTo(null);
-                    dispose();
+                    if(namaPemesan.matches("[A-Z a-z]+")&&nik.matches("[0-9]{16}")&&telepon.matches("[0-9]{10,14}")){
+                        DetailBooking detail = new DetailBooking(nomorKamar,harga, masuk, keluar, namaPemesan, nik, telepon);
+                        detail.setVisible(true);
+                        detail.setLocationRelativeTo(null);
+                        dispose();
+                    }else{
+                        inputNamaPemesan.setText("");
+                        inputNIK.setText("");
+                        inputTelepon.setText("");
+                        JOptionPane.showMessageDialog(null, "Masukkan data yang valid !");
+                    }
+
                 } catch (Exception err) {
-                    err.printStackTrace();
                 }
             }
         });
@@ -398,15 +406,12 @@ public class Booking extends BookingBase {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
-                System.out.println(info.getName());
             }
         } catch (Exception e) {
-            System.out.println(e.toString());
         }
         try {
             Booking halo = new Booking(100, new Date(), new Date());
         } catch (Exception e) {
-            System.out.println(e.toString());
         }
 
 

@@ -40,7 +40,7 @@ public class Home extends JFrame{
         }
         
         inputMasuk.setDate(new Date());
-        inputKeluar.setDate(new Date());
+        inputKeluar.setDate(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)));
         updateKamar();
         init();
         
@@ -341,8 +341,8 @@ public class Home extends JFrame{
         inputMasuk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(inputMasuk.getDate().after(inputKeluar.getDate())){
-                    inputKeluar.setDate(inputMasuk.getDate());
+                if(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)).after(inputKeluar.getDate())){
+                    inputKeluar.setDate(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)));
                 }
                 if(inputMasuk.getDate().before(new Date())){
                     JOptionPane.showMessageDialog(null,"Tidak bisa reservasi tanggal yang lewat");
@@ -355,9 +355,9 @@ public class Home extends JFrame{
         inputKeluar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(inputMasuk.getDate().after(inputKeluar.getDate())){
+                if(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)).after(inputKeluar.getDate())){
                     JOptionPane.showMessageDialog(null,"Cek In harus lebih awal");
-                    inputKeluar.setDate(inputMasuk.getDate());
+                    inputKeluar.setDate(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)));
                     return;
                 }
                 updateKamar(contKamar);
