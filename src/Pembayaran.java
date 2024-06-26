@@ -78,7 +78,7 @@ public class Pembayaran extends JFrame {
         JButton btnExit = new JButton("Home");
         JPanel contKamar = new JPanel(null);
         JPanel contInput = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
-        JXDatePicker inputTanggal = new JXDatePicker(new Locale("id", "ID"));
+        JLabel labelPenanda = new JLabel("Isi Pembayaran");
         JLabel labelNoKamar = new JLabel("     "+String.valueOf(nomorKamar));
         JLabel labelHarga = new JLabel("   "+String.valueOf(harga));
 
@@ -102,12 +102,11 @@ public class Pembayaran extends JFrame {
         labelNama.setFont(new Font("Inter", Font.BOLD, 48));
         labelNama.setHorizontalAlignment(JLabel.CENTER);
 
-        inputTanggal.setPreferredSize(new Dimension(300, 75));
-        inputTanggal.getEditor().setEditable(false);
-        inputTanggal.getEditor().setText(null);
-        inputTanggal.setDate(new Date());
-        inputTanggal.setBorder(BorderFactory.createEmptyBorder(10, 29, 10, 10));
-        inputTanggal.setBackground(Color.RED);
+        labelPenanda.setPreferredSize(new Dimension(290, 70));
+        labelPenanda.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 10));
+        labelPenanda.setFont(new Font("Inter", Font.BOLD, 32));
+        labelPenanda.setBackground(Color.white);
+        labelPenanda.setOpaque(true);
 
         btnExit.setFont(new Font("Inter", Font.BOLD, 32));
 
@@ -146,7 +145,7 @@ public class Pembayaran extends JFrame {
         contButton.add(btnExit);
         contKamar.add(contInput);
 
-        contInput.add(inputTanggal);
+        contInput.add(labelPenanda);
         contInput.add(Box.createRigidArea(new Dimension(20, 0))); // Spacing between components
         contInput.add(labelNoKamar);
         contInput.add(Box.createRigidArea(new Dimension(20, 0))); // Spacing between components
