@@ -1,3 +1,11 @@
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.jdesktop.swingx.JXDatePicker;
 import config.DbConnect;
 import javax.swing.*;
@@ -21,35 +29,44 @@ public class Pembayaran extends JFrame {
     private JScrollPane contKamar = new JScrollPane();
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
+    private int nomorKamar;
+    private int harga;
+    private Date masuk;
+    private Date keluar;
+    private String namaPemesan;
+    private String nik;
+    private String telepon;
+    private long jumlahmalam;
+    private long totalharga;
+    private int ranjang;
+    private int ac;
 
-    public Pembayaran() {
-<<<<<<< HEAD
-//        try {
-//            con = new DbConnect();
-//            statement = con.getConnection().createStatement();
-//            dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
-//            while (dataFromDB.next()) {
-//                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
-//                daftarKamar.add(baru);
-//            }
-//            System.out.println(daftarKamar.size());
-//        } catch (SQLException e) {
-//            System.out.println(e.toString());
-//        }
-=======
+    public Pembayaran(int nomorKamar, int harga, Date masuk, Date keluar, String namaPemesan, String nik, String telepon) {
         try {
             con = new DbConnect();
             statement = con.getConnection().createStatement();
             dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
-            // while (dataFromDB.next()) {
-            //     RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
-            //     daftarKamar.add(baru);
-            // }
+            while (dataFromDB.next()) {
+//                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
+//               daftarKamar.add(baru);
+                ranjang = dataFromDB.getInt("ranjang");
+                ac = dataFromDB.getInt("ac");
+                harga = dataFromDB.getInt(6);
+
+            }
             System.out.println(daftarKamar.size());
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
->>>>>>> aa122b8c7ff172cb9e567711c8357f9b8c3e0cb4
+        this.nomorKamar = nomorKamar;
+        this.harga = harga;
+        this.masuk = masuk;
+        this.keluar = keluar;
+        this.jumlahmalam = (keluar.getTime() - masuk.getTime())/ 1000 / 60 / 60 / 24;
+        this.totalharga = jumlahmalam*harga;
+        this.namaPemesan = namaPemesan;
+        this.nik = nik;
+        this.telepon = telepon;
         init();
     }
 
@@ -58,12 +75,12 @@ public class Pembayaran extends JFrame {
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Pembayaran");
         JPanel contButton = new JPanel(new GridLayout(3, 1, 0, 20));
-        JButton btnExit = new JButton("Keluar");
+        JButton btnExit = new JButton("Home");
         JPanel contKamar = new JPanel(null);
         JPanel contInput = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         JXDatePicker inputTanggal = new JXDatePicker(new Locale("id", "ID"));
-        JLabel labelNoKamar = new JLabel("    Kamar");
-        JLabel labelHarga = new JLabel("    Harga");
+        JLabel labelNoKamar = new JLabel("     "+String.valueOf(nomorKamar));
+        JLabel labelHarga = new JLabel("   "+String.valueOf(harga));
 
         contJam.setBounds(0, 0, 350, 160);
         contJam.setBackground(new Color(214, 217, 223));
@@ -93,13 +110,6 @@ public class Pembayaran extends JFrame {
         inputTanggal.setBackground(Color.RED);
 
         btnExit.setFont(new Font("Inter", Font.BOLD, 32));
-
-        btnExit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
 
         labelNoKamar.setFont(new Font("Inter", Font.BOLD, 20));
         labelNoKamar.setBackground(new Color(146, 146, 146));
@@ -143,24 +153,9 @@ public class Pembayaran extends JFrame {
         contInput.add(labelHarga);
         contKamar.add(contInput);
 
-        JPanel panelIdCustomer = new JPanel(null);
-        panelIdCustomer.setLayout(new BoxLayout(panelIdCustomer,BoxLayout.X_AXIS));
-        panelIdCustomer.setBounds(50, 85, 1020, 38);
-        panelIdCustomer.setBackground(new Color(146, 146, 146));
-        panelIdCustomer.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
-
-        JLabel labelIdCustomer = new JLabel("ID Customer");
-        labelIdCustomer.setFont(new Font("Inter", Font.BOLD, 20));
-        labelIdCustomer.setPreferredSize(new Dimension(200,30));
-        panelIdCustomer.add(labelIdCustomer);
-
-        JTextField inputIdCustomer = new JTextField();
-        inputIdCustomer.setPreferredSize(new Dimension(700, 34));
-        panelIdCustomer.add(inputIdCustomer);
-
         JPanel panelNamaPemesan = new JPanel(null);
         panelNamaPemesan.setLayout(new BoxLayout(panelNamaPemesan,BoxLayout.X_AXIS));
-        panelNamaPemesan.setBounds(50, 130, 1020, 38);
+        panelNamaPemesan.setBounds(50, 85, 1020, 38);
         panelNamaPemesan.setBackground(new Color(146, 146, 146));
         panelNamaPemesan.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
 
@@ -172,10 +167,46 @@ public class Pembayaran extends JFrame {
         JTextField inputNamaPemesan = new JTextField();
         inputNamaPemesan.setPreferredSize(new Dimension(700, 34));
         panelNamaPemesan.add(inputNamaPemesan);
+        inputNamaPemesan.disable();
+        inputNamaPemesan.setText(namaPemesan);
+
+        JPanel panelNIK = new JPanel(null);
+        panelNIK.setLayout(new BoxLayout(panelNIK,BoxLayout.X_AXIS));
+        panelNIK.setBounds(50, 130, 1020, 38);
+        panelNIK.setBackground(new Color(146, 146, 146));
+        panelNIK.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
+
+        JLabel labelNIK = new JLabel("NIK");
+        labelNIK.setFont(new Font("Inter", Font.BOLD, 20));
+        labelNIK.setPreferredSize(new Dimension(200,30));
+        panelNIK.add(labelNIK);
+
+        JTextField inputNIK = new JTextField();
+        inputNIK.setPreferredSize(new Dimension(700, 34));
+        panelNIK.add(inputNIK);
+        inputNIK.disable();
+        inputNIK.setText(nik);
+
+        JPanel panelTelepon = new JPanel(null);
+        panelTelepon.setLayout(new BoxLayout(panelTelepon,BoxLayout.X_AXIS));
+        panelTelepon.setBounds(50, 175, 1020, 38);
+        panelTelepon.setBackground(new Color(146, 146, 146));
+        panelTelepon.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
+
+        JLabel labelTelepon = new JLabel("Telepon");
+        labelTelepon.setFont(new Font("Inter", Font.BOLD, 20));
+        labelTelepon.setPreferredSize(new Dimension(200,30));
+        panelTelepon.add(labelTelepon);
+
+        JTextField inputTelepon = new JTextField();
+        inputTelepon.setPreferredSize(new Dimension(700, 34));
+        panelTelepon.add(inputTelepon);
+        inputTelepon.disable();
+        inputTelepon.setText(telepon);
 
         JPanel panelCheckin = new JPanel(null);
         panelCheckin.setLayout(new BoxLayout(panelCheckin,BoxLayout.X_AXIS));
-        panelCheckin.setBounds(50, 175, 1020, 38);
+        panelCheckin.setBounds(50, 220, 1020, 38);
         panelCheckin.setBackground(new Color(146, 146, 146));
         panelCheckin.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
 
@@ -187,10 +218,12 @@ public class Pembayaran extends JFrame {
         JTextField inputCheckin = new JTextField();
         inputCheckin.setPreferredSize(new Dimension(700, 34));
         panelCheckin.add(inputCheckin);
+        inputCheckin.disable();
+        inputCheckin.setText(new SimpleDateFormat("yyyy-MM-dd").format(masuk));
 
         JPanel panelCheckout = new JPanel(null);
         panelCheckout.setLayout(new BoxLayout(panelCheckout,BoxLayout.X_AXIS));
-        panelCheckout.setBounds(50, 220, 1020, 38);
+        panelCheckout.setBounds(50, 265, 1020, 38);
         panelCheckout.setBackground(new Color(146, 146, 146));
         panelCheckout.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
 
@@ -202,10 +235,12 @@ public class Pembayaran extends JFrame {
         JTextField inputCheckout = new JTextField();
         inputCheckout.setPreferredSize(new Dimension(700, 34));
         panelCheckout.add(inputCheckout);
+        inputCheckout.disable();
+        inputCheckout.setText(new SimpleDateFormat("yyyy-MM-dd").format(keluar));
 
         JPanel panelJumlahmalam = new JPanel(null);
         panelJumlahmalam.setLayout(new BoxLayout(panelJumlahmalam,BoxLayout.X_AXIS));
-        panelJumlahmalam.setBounds(50, 265, 1020, 38);
+        panelJumlahmalam.setBounds(50, 310, 1020, 38);
         panelJumlahmalam.setBackground(new Color(146, 146, 146));
         panelJumlahmalam.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
 
@@ -217,10 +252,12 @@ public class Pembayaran extends JFrame {
         JTextField inputJumlahmalam = new JTextField();
         inputJumlahmalam.setPreferredSize(new Dimension(700, 34));
         panelJumlahmalam.add(inputJumlahmalam);
+        inputJumlahmalam.disable();
+        inputJumlahmalam.setText(Long.toString(jumlahmalam));
 
         JPanel panelTipeKamar = new JPanel();
         panelTipeKamar.setLayout(new BoxLayout(panelTipeKamar, BoxLayout.Y_AXIS));
-        panelTipeKamar.setBounds(50, 310, 1020, 84);
+        panelTipeKamar.setBounds(50, 355, 1020, 84);
         panelTipeKamar.setBackground(new Color(146, 146, 146));
 
         JPanel labelAndCheckBoxPanel = new JPanel();
@@ -251,6 +288,9 @@ public class Pembayaran extends JFrame {
         acGroup.add(nonAcCheckBox);
         checkBoxPanel.add(nonAcCheckBox);
 
+        acCheckBox.setSelected(ac>0?true:false);
+        nonAcCheckBox.setSelected(ac==0?true:false);
+
         labelAndCheckBoxPanel.add(checkBoxPanel);
 
         labelAndCheckBoxPanel.add(Box.createHorizontalStrut(300));
@@ -272,6 +312,9 @@ public class Pembayaran extends JFrame {
         bedGroup.add(doubleCheckBox);
         checkBoxPanel2.add(doubleCheckBox);
 
+        singleCheckBox.setSelected(ranjang==1?true:false);
+        doubleCheckBox.setSelected(ranjang>1?true:false);
+
         labelAndCheckBoxPanel.add(checkBoxPanel2);
 
         panelTipeKamar.add(labelAndCheckBoxPanel);
@@ -282,7 +325,7 @@ public class Pembayaran extends JFrame {
 
         JPanel panelTotalHarga = new JPanel(null);
         panelTotalHarga.setLayout(new BoxLayout(panelTotalHarga,BoxLayout.X_AXIS));
-        panelTotalHarga.setBounds(50, 401, 1020, 38);
+        panelTotalHarga.setBounds(50, 448, 1020, 38);
         panelTotalHarga.setBackground(new Color(146, 146, 146));
         panelTotalHarga.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
 
@@ -294,21 +337,8 @@ public class Pembayaran extends JFrame {
         JTextField inputTotalHarga = new JTextField();
         inputTotalHarga.setPreferredSize(new Dimension(700, 34));
         panelTotalHarga.add(inputTotalHarga);
-
-        JPanel panelKodeBooking = new JPanel(null);
-        panelKodeBooking.setLayout(new BoxLayout(panelKodeBooking,BoxLayout.X_AXIS));
-        panelKodeBooking.setBounds(50, 446, 1020, 38);
-        panelKodeBooking.setBackground(new Color(146, 146, 146));
-        panelKodeBooking.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
-
-        JLabel labelKodeBooking = new JLabel("Kode Booking");
-        labelKodeBooking.setFont(new Font("Inter", Font.BOLD, 20));
-        labelKodeBooking.setPreferredSize(new Dimension(200,30));
-        panelKodeBooking.add(labelKodeBooking);
-
-        JTextField inputKodeBooking = new JTextField();
-        inputKodeBooking.setPreferredSize(new Dimension(700, 34));
-        panelKodeBooking.add(inputKodeBooking);
+        inputTotalHarga.disable();
+        inputTotalHarga.setText(Long.toString(totalharga));
 
         JPanel panelCetak= new JPanel();
         panelCetak.setLayout(new BoxLayout(panelCetak, BoxLayout.Y_AXIS));
@@ -327,14 +357,14 @@ public class Pembayaran extends JFrame {
 
         contKamar.setVisible(true);
 
-        contKamar.add(panelIdCustomer);
         contKamar.add(panelNamaPemesan);
+        contKamar.add(panelNIK);
+        contKamar.add(panelTelepon);
         contKamar.add(panelCheckin);
         contKamar.add(panelCheckout);
         contKamar.add(panelJumlahmalam);
         contKamar.add(panelTipeKamar);
         contKamar.add(panelTotalHarga);
-        contKamar.add(panelKodeBooking);
         contKamar.add(panelCetak);
 
         add(contJam);
@@ -357,14 +387,52 @@ public class Pembayaran extends JFrame {
                 dispose();
             }
         });
-    }
 
+        btnCetak.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cetakBuktiBayar();
+            }
+        });
+
+    }
 
     private void updateTime() {
         String currentTime = timeFormat.format(new Date());
         String currentDate = dateFormat.format(new Date());
         timeLabel.setText(currentTime);
         dateLabel.setText(currentDate);
+    }
+
+    private void cetakBuktiBayar() {
+        Document document = new Document();
+        try {
+            // Menggunakan PdfWriter untuk menuliskan dokumen ke file PDF
+            PdfWriter.getInstance(document, new FileOutputStream("invoice.pdf"));
+            document.open();
+
+            // Menambahkan konten ke dokumen
+            document.add(new Paragraph("Invoice Pembayaran"));
+            document.add(new Paragraph("==================="));
+            document.add(new Paragraph("Nomor Kamar: " + nomorKamar));
+            document.add(new Paragraph("Harga: " + harga));
+            document.add(new Paragraph("Nama Pemesan: " + namaPemesan));
+            document.add(new Paragraph("NIK: " + nik));
+            document.add(new Paragraph("Telepon: " + telepon));
+            document.add(new Paragraph("Checkin: " + new SimpleDateFormat("yyyy-MM-dd").format(masuk)));
+            document.add(new Paragraph("Checkout: " + new SimpleDateFormat("yyyy-MM-dd").format(keluar)));
+            document.add(new Paragraph("Jumlah Malam: " + jumlahmalam));
+            document.add(new Paragraph("Total Harga: " + totalharga));
+
+            // Menutup dokumen
+            document.close();
+
+            // Menampilkan pesan sukses ke user
+            JOptionPane.showMessageDialog(this, "Invoice berhasil dicetak sebagai invoice.pdf");
+        } catch (DocumentException | FileNotFoundException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Gagal mencetak invoice: " + e.getMessage());
+        }
     }
 
     public static void main(String[] args) {
@@ -380,7 +448,7 @@ public class Pembayaran extends JFrame {
             System.out.println(e.toString());
         }
         try {
-            Pembayaran halo = new Pembayaran();
+            Pembayaran halo = new Pembayaran(100,600, new Date(), new Date(), "Nama Pemesan", "16 Karakter", "+62");
         } catch (Exception e) {
             System.out.println(e.toString());
         }

@@ -21,28 +21,47 @@ public class DetailBooking extends JFrame {
     private JScrollPane contKamar = new JScrollPane();
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
+    private int nomorKamar;
+    private int harga;
+    private Date masuk;
+    private Date keluar;
+    private String namaPemesan;
+    private String nik;
+    private String telepon;
 
-    public DetailBooking() {
+    private long jumlahmalam;
+    private long totalharga;
+    private int ranjang;
+    private int ac;
+
+    public DetailBooking(int nomorKamar, int harga, Date masuk, Date keluar, String namaPemesan, String nik, String telepon) {
         try {
             con = new DbConnect();
             statement = con.getConnection().createStatement();
-            dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
-<<<<<<< HEAD
+            dataFromDB = statement.executeQuery("SELECT * FROM dataKamar WHERE nomorKamar='"+nomorKamar+"'");
             while (dataFromDB.next()) {
 //                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
 //               daftarKamar.add(baru);
+                ranjang = dataFromDB.getInt("ranjang");
+                ac = dataFromDB.getInt("ac");
+                harga = dataFromDB.getInt(6);
+
             }
-=======
-            // while (dataFromDB.next()) {
-            //     RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
-            //     daftarKamar.add(baru);
-            // }
->>>>>>> aa122b8c7ff172cb9e567711c8357f9b8c3e0cb4
             System.out.println(daftarKamar.size());
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
+        this.nomorKamar = nomorKamar;
+        this.harga = harga;
+        this.masuk = masuk;
+        this.keluar = keluar;
+        this.jumlahmalam = (keluar.getTime() - masuk.getTime())/ 1000 / 60 / 60 / 24;
+        this.totalharga = jumlahmalam*harga;
+        this.namaPemesan = namaPemesan;
+        this.nik = nik;
+        this.telepon = telepon;
         init();
+
     }
 
     private void init() {
@@ -50,12 +69,12 @@ public class DetailBooking extends JFrame {
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Detail Booking");
         JPanel contButton = new JPanel(new GridLayout(3, 1, 0, 20));
-        JButton btnExit = new JButton("Keluar");
+        JButton btnExit = new JButton("Home");
         JPanel contKamar = new JPanel(null);
         JPanel contInput = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         JXDatePicker inputTanggal = new JXDatePicker(new Locale("id", "ID"));
-        JLabel labelNoKamar = new JLabel("    Kamar");
-        JLabel labelHarga = new JLabel("    Harga");
+        JLabel labelNoKamar = new JLabel("     "+String.valueOf(nomorKamar));
+        JLabel labelHarga = new JLabel("   "+String.valueOf(harga));
 
         contJam.setBounds(0, 0, 350, 160);
         contJam.setBackground(new Color(214, 217, 223));
@@ -85,13 +104,6 @@ public class DetailBooking extends JFrame {
         inputTanggal.setBackground(Color.RED);
 
         btnExit.setFont(new Font("Inter", Font.BOLD, 32));
-
-        btnExit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
 
         labelNoKamar.setFont(new Font("Inter", Font.BOLD, 20));
         labelNoKamar.setBackground(new Color(146, 146, 146));
@@ -135,24 +147,9 @@ public class DetailBooking extends JFrame {
         contInput.add(labelHarga);
         contKamar.add(contInput);
 
-        JPanel panelIdCustomer = new JPanel(null);
-        panelIdCustomer.setLayout(new BoxLayout(panelIdCustomer,BoxLayout.X_AXIS));
-        panelIdCustomer.setBounds(50, 85, 1020, 38);
-        panelIdCustomer.setBackground(new Color(146, 146, 146));
-        panelIdCustomer.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
-
-        JLabel labelIdCustomer = new JLabel("ID Customer");
-        labelIdCustomer.setFont(new Font("Inter", Font.BOLD, 20));
-        labelIdCustomer.setPreferredSize(new Dimension(200,30));
-        panelIdCustomer.add(labelIdCustomer);
-
-        JTextField inputIdCustomer = new JTextField();
-        inputIdCustomer.setPreferredSize(new Dimension(700, 34));
-        panelIdCustomer.add(inputIdCustomer);
-
         JPanel panelNamaPemesan = new JPanel(null);
         panelNamaPemesan.setLayout(new BoxLayout(panelNamaPemesan,BoxLayout.X_AXIS));
-        panelNamaPemesan.setBounds(50, 130, 1020, 38);
+        panelNamaPemesan.setBounds(50, 85, 1020, 38);
         panelNamaPemesan.setBackground(new Color(146, 146, 146));
         panelNamaPemesan.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
 
@@ -164,6 +161,25 @@ public class DetailBooking extends JFrame {
         JTextField inputNamaPemesan = new JTextField();
         inputNamaPemesan.setPreferredSize(new Dimension(700, 34));
         panelNamaPemesan.add(inputNamaPemesan);
+        inputNamaPemesan.disable();
+        inputNamaPemesan.setText(namaPemesan);
+
+        JPanel panelNIK = new JPanel(null);
+        panelNIK.setLayout(new BoxLayout(panelNIK,BoxLayout.X_AXIS));
+        panelNIK.setBounds(50, 130, 1020, 38);
+        panelNIK.setBackground(new Color(146, 146, 146));
+        panelNIK.setBorder(BorderFactory.createEmptyBorder(4, 20, 4, 20));
+
+        JLabel labelNIK = new JLabel("NIK");
+        labelNIK.setFont(new Font("Inter", Font.BOLD, 20));
+        labelNIK.setPreferredSize(new Dimension(200,30));
+        panelNIK.add(labelNIK);
+
+        JTextField inputNIK = new JTextField();
+        inputNIK.setPreferredSize(new Dimension(700, 34));
+        panelNIK.add(inputNIK);
+        inputNIK.disable();
+        inputNIK.setText(nik);
 
         JPanel panelTelepon = new JPanel(null);
         panelTelepon.setLayout(new BoxLayout(panelTelepon,BoxLayout.X_AXIS));
@@ -179,6 +195,8 @@ public class DetailBooking extends JFrame {
         JTextField inputTelepon = new JTextField();
         inputTelepon.setPreferredSize(new Dimension(700, 34));
         panelTelepon.add(inputTelepon);
+        inputTelepon.disable();
+        inputTelepon.setText(telepon);
 
         JPanel panelCheckin = new JPanel(null);
         panelCheckin.setLayout(new BoxLayout(panelCheckin,BoxLayout.X_AXIS));
@@ -194,6 +212,8 @@ public class DetailBooking extends JFrame {
         JTextField inputCheckin = new JTextField();
         inputCheckin.setPreferredSize(new Dimension(700, 34));
         panelCheckin.add(inputCheckin);
+        inputCheckin.disable();
+        inputCheckin.setText(new SimpleDateFormat("yyyy-MM-dd").format(masuk));
 
         JPanel panelCheckout = new JPanel(null);
         panelCheckout.setLayout(new BoxLayout(panelCheckout,BoxLayout.X_AXIS));
@@ -209,6 +229,8 @@ public class DetailBooking extends JFrame {
         JTextField inputCheckout = new JTextField();
         inputCheckout.setPreferredSize(new Dimension(700, 34));
         panelCheckout.add(inputCheckout);
+        inputCheckout.disable();
+        inputCheckout.setText(new SimpleDateFormat("yyyy-MM-dd").format(keluar));
 
         JPanel panelJumlahmalam = new JPanel(null);
         panelJumlahmalam.setLayout(new BoxLayout(panelJumlahmalam,BoxLayout.X_AXIS));
@@ -224,6 +246,8 @@ public class DetailBooking extends JFrame {
         JTextField inputJumlahmalam = new JTextField();
         inputJumlahmalam.setPreferredSize(new Dimension(700, 34));
         panelJumlahmalam.add(inputJumlahmalam);
+        inputJumlahmalam.disable();
+        inputJumlahmalam.setText(Long.toString(jumlahmalam));
 
         JPanel panelTipeKamar = new JPanel();
         panelTipeKamar.setLayout(new BoxLayout(panelTipeKamar, BoxLayout.Y_AXIS));
@@ -258,6 +282,9 @@ public class DetailBooking extends JFrame {
         acGroup.add(nonAcCheckBox);
         checkBoxPanel.add(nonAcCheckBox);
 
+        acCheckBox.setSelected(ac>0?true:false);
+        nonAcCheckBox.setSelected(ac==0?true:false);
+
         labelAndCheckBoxPanel.add(checkBoxPanel);
 
         labelAndCheckBoxPanel.add(Box.createHorizontalStrut(300));
@@ -279,6 +306,9 @@ public class DetailBooking extends JFrame {
         bedGroup.add(doubleCheckBox);
         checkBoxPanel2.add(doubleCheckBox);
 
+        singleCheckBox.setSelected(ranjang==1?true:false);
+        doubleCheckBox.setSelected(ranjang>1?true:false);
+
         labelAndCheckBoxPanel.add(checkBoxPanel2);
 
         panelTipeKamar.add(labelAndCheckBoxPanel);
@@ -298,38 +328,55 @@ public class DetailBooking extends JFrame {
         labelTotalHarga.setPreferredSize(new Dimension(200,30));
         panelTotalHarga.add(labelTotalHarga);
 
-        JPanel panelButtons = new JPanel();
-        panelButtons.setLayout(new BoxLayout(panelButtons, BoxLayout.Y_AXIS));
-        panelButtons.setBackground(new Color(146, 146, 146));
-        panelButtons.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        JTextField inputTotalHarga = new JTextField();
+        inputTotalHarga.setPreferredSize(new Dimension(700, 34));
+        panelTotalHarga.add(inputTotalHarga);
+        inputTotalHarga.disable();
+        inputTotalHarga.setText(Long.toString(totalharga));
 
-        JButton btnCetak = new JButton("Cetak");
-        btnCetak.setFont(new Font("Inter", Font.BOLD, 20));
-        btnCetak.setBackground(Color.WHITE);
-        btnCetak.setPreferredSize(new Dimension(300, 50));
-        panelButtons.add(btnCetak);
-
-        panelButtons.add(Box.createRigidArea(new Dimension(0, 10)));
-
-        JButton btnBack = new JButton("Back <<");
+        JButton btnBack = new JButton("Back");
         btnBack.setFont(new Font("Inter", Font.BOLD, 20));
-        btnBack.setBackground(Color.WHITE);
-        btnBack.setPreferredSize(new Dimension(300, 50));
-        panelButtons.add(btnBack);
+        btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Booking booking = new Booking(nomorKamar,masuk,keluar); // Membuat objek halaman pemesanan baru
+                booking.setVisible(true); // Menampilkan halaman pemesanan
+                dispose(); // Menutup jendela saat ini
+            }
+        });
+        btnBack.setBounds(50, 550, 200, 50); // Menyesuaikan posisi dan ukuran tombol
+        contKamar.add(btnBack);
 
-        contKamar.add(panelButtons);
+        JButton btnSave = new JButton("Bayar");
+        btnSave.setFont(new Font("Inter", Font.BOLD, 20));
+        btnSave.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveBooking(); // Panggil metode untuk menyimpan booking
+                navigateToPembayaran();
+            }
+        });
+        btnSave.setBounds(940, 750, 200, 50);
+        add(btnSave); // Tambahkan komponen ke container
 
-        contKamar.setVisible(true);
+        btnExit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Home home = new Home();
+                home.setVisible(true);
+                dispose();
+            }
+        });
 
-        contKamar.add(panelIdCustomer);
         contKamar.add(panelNamaPemesan);
+        contKamar.add(panelNIK);
         contKamar.add(panelTelepon);
         contKamar.add(panelCheckin);
         contKamar.add(panelCheckout);
         contKamar.add(panelJumlahmalam);
         contKamar.add(panelTipeKamar);
         contKamar.add(panelTotalHarga);
-        contKamar.add(panelButtons);
+
 
         add(contJam);
         add(contDetails);
@@ -344,6 +391,14 @@ public class DetailBooking extends JFrame {
         setVisible(true);
     }
 
+    private void navigateToPembayaran() {
+        // Membuat instance dari Pembayaran dan menampilkannya
+        Pembayaran pembayaran = new Pembayaran(nomorKamar,harga, masuk, keluar, namaPemesan, nik, telepon);
+        pembayaran.setVisible(true);
+
+        // Menutup frame saat ini jika diperlukan
+        this.dispose(); // Pastikan ini berada dalam konteks kelas BookingApp
+    }
 
     private void updateTime() {
         String currentTime = timeFormat.format(new Date());
@@ -351,6 +406,58 @@ public class DetailBooking extends JFrame {
         timeLabel.setText(currentTime);
         dateLabel.setText(currentDate);
     }
+
+    private void saveBooking() {
+        Connection connection = null;
+        PreparedStatement insertUserStmt = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            // Inisialisasi koneksi
+            connection = con.getConnection();
+            // Set auto-commit ke false untuk manajemen transaksi
+            connection.setAutoCommit(false);
+
+            // Query untuk memasukkan data pengguna
+            String insertUserQuery = "INSERT INTO datauser (name, username, password, role) VALUES (?, ?, ?, ?)";
+            insertUserStmt = connection.prepareStatement(insertUserQuery);
+            insertUserStmt.setString(1, namaPemesan);
+            insertUserStmt.setString(2, nik);
+            insertUserStmt.setString(3, telepon);
+            insertUserStmt.setString(4, "cust");
+            insertUserStmt.executeUpdate();
+
+            // Query untuk memasukkan data booking
+            String query = "INSERT INTO dataBooking (nomorKamar, userId, checkIn, checkOut, harga) VALUES (?, ?, ?, ?, ?)";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, nomorKamar);
+            preparedStatement.setString(2, nik); // Asumsi nik adalah userId
+            preparedStatement.setDate(3, new java.sql.Date(masuk.getTime()));
+            preparedStatement.setDate(4, new java.sql.Date(keluar.getTime()));
+            preparedStatement.setLong(5, totalharga);
+            preparedStatement.executeUpdate();
+
+            // Commit transaksi
+            connection.commit();
+            JOptionPane.showMessageDialog(this, "Data booking berhasil disimpan");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                if (connection != null) {
+                    try {
+                        // Rollback transaksi jika terjadi kesalahan
+                        connection.rollback();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data booking");
+            } finally {
+                // Tutup resources
+                if (insertUserStmt != null) try { insertUserStmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+                if (preparedStatement != null) try { preparedStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
+                if (connection != null) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+        }
 
     public static void main(String[] args) {
         try {
@@ -365,7 +472,7 @@ public class DetailBooking extends JFrame {
             System.out.println(e.toString());
         }
         try {
-            DetailBooking halo = new DetailBooking();
+            DetailBooking halo = new DetailBooking(100,600, new Date(), new Date(), "Nama Pemesan", "16 Karakter", "+62");
         } catch (Exception e) {
             System.out.println(e.toString());
         }

@@ -15,6 +15,9 @@ public class RoomClass {
     private Date masuk;
     private Date keluar;
     private int jumlahmalam;
+    private String namaPemesan;
+    private String nik;
+    private String telepon;
 
     public RoomClass(String roomNumber,int bed,int ac,int price,Date masuk,Date keluar){
         this.roomNumber = roomNumber;
@@ -23,7 +26,6 @@ public class RoomClass {
         this.price = price;
         this.masuk = masuk;
         this.keluar = keluar;
-        this.jumlahmalam = jumlahmalam;
         
     }
    public JPanel createCard(){

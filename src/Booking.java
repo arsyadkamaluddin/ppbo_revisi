@@ -17,7 +17,6 @@ public class Booking extends BookingBase {
     DbConnect con = null;
     private ArrayList<RoomClass> daftarKamar = new ArrayList<RoomClass>();
     private JScrollPane contKamar = new JScrollPane();
-    private String nama;
     private int nomorKamar;
     private int harga;
     private Date masuk;
@@ -27,7 +26,7 @@ public class Booking extends BookingBase {
     private int ranjang;
     private int ac;
 
-    public Booking(int nomorKamar,Date masuk,Date keluar) {
+    public Booking(int nomorKamar, Date masuk, Date keluar) {
        try {
            con = new DbConnect();
            statement = con.getConnection().createStatement();
@@ -57,7 +56,7 @@ public class Booking extends BookingBase {
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Booking");
         JPanel contButton = new JPanel(new GridLayout(3, 1, 0, 20));
-        JButton btnExit = new JButton("Keluar");
+        JButton btnExit = new JButton("Home");
         JPanel contKamar = new JPanel(null);
         JPanel contInput = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         JXDatePicker inputTanggal = new JXDatePicker(new Locale("id", "ID"));
@@ -147,7 +146,6 @@ public class Booking extends BookingBase {
 
         JTextField inputNamaPemesan = new JTextField();
         inputNamaPemesan.setPreferredSize(new Dimension(700, 34));
-        inputNamaPemesan.setText(this.nama);
         panelNamaPemesan.add(inputNamaPemesan);
 
         JPanel panelNIK = new JPanel(null);
@@ -225,13 +223,11 @@ public class Booking extends BookingBase {
         labelJumlahmalam.setPreferredSize(new Dimension(200,30));
         panelJumlahmalam.add(labelJumlahmalam);
 
-
         JTextField inputJumlahmalam = new JTextField();
         inputJumlahmalam.setPreferredSize(new Dimension(700, 34));
         panelJumlahmalam.add(inputJumlahmalam);
         inputJumlahmalam.disable();
         inputJumlahmalam.setText(Long.toString(jumlahmalam));
-
 
         JPanel panelTipeKamar = new JPanel();
         panelTipeKamar.setLayout(new BoxLayout(panelTipeKamar, BoxLayout.Y_AXIS));
@@ -340,7 +336,11 @@ public class Booking extends BookingBase {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    DetailBooking detail = new DetailBooking();
+                    String namaPemesan = inputNamaPemesan.getText();
+                    String nik = inputNIK.getText();
+                    String telepon = inputTelepon.getText();
+
+                    DetailBooking detail = new DetailBooking(nomorKamar,harga, masuk, keluar, namaPemesan, nik, telepon);
                     detail.setVisible(true);
                     detail.setLocationRelativeTo(null);
                     dispose();
