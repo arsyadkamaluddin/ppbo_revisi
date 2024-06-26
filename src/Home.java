@@ -1,3 +1,4 @@
+
 import org.jdesktop.swingx.JXDatePicker;
 import config.DbConnect;
 import javax.sound.sampled.BooleanControl;
@@ -14,92 +15,96 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimerTask;
 
-public class Home extends JFrame{
+public class Home extends JFrame {
+
     Color warna = Color.WHITE;
     DbConnect con = new DbConnect();
     Statement statement = null;
     ResultSet dataFromDB = null;
-    private JXDatePicker inputMasuk = new JXDatePicker(new Locale("id","ID"));
-    private JXDatePicker inputKeluar = new JXDatePicker(new Locale("id","ID"));
+    private JXDatePicker inputMasuk = new JXDatePicker(new Locale("id", "ID"));
+    private JXDatePicker inputKeluar = new JXDatePicker(new Locale("id", "ID"));
     private JCheckBox cekAc = new JCheckBox("AC");
     private JCheckBox cekDouble = new JCheckBox("Double Bed");
     private ArrayList<RoomClass> daftarKamar = new ArrayList<RoomClass>();
     private JLabel timeLabel = new JLabel();
     private JLabel dateLabel = new JLabel();
-    private  JScrollPane contData = new JScrollPane();
+    private JScrollPane contData = new JScrollPane();
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
     private JPanel contKamar = new JPanel(null);
     private JLabel labelHasil = new JLabel();
-    
-    public Home(){
+
+    public Home() {
         try {
             statement = con.getConnection().createStatement();
         } catch (SQLException e) {
             System.out.println(e);
         }
-        
+
         inputMasuk.setDate(new Date());
-        inputKeluar.setDate(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)));
+        inputKeluar.setDate(new Date(inputMasuk.getDate().getTime() + (24 * 60 * 60 * 1000)));
         updateKamar();
         init();
-        
+
     }
-    private void updateKamar(){
-        String query = "CALL get_available_rooms('"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"','"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"','1','0')";
-        try{
+
+    private void updateKamar() {
+        String query = "CALL get_available_rooms('" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "','" + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "','1','0')";
+        try {
             dataFromDB = statement.executeQuery(query);
-            while(dataFromDB.next()){
-                RoomClass baru = new RoomClass(dataFromDB.getString(1),dataFromDB.getInt(2),dataFromDB.getInt(3),dataFromDB.getInt(4),inputMasuk.getDate(),inputKeluar.getDate());
+            while (dataFromDB.next()) {
+                RoomClass baru = new RoomClass(dataFromDB.getString(1), dataFromDB.getInt(2), dataFromDB.getInt(3), dataFromDB.getInt(4), inputMasuk.getDate(), inputKeluar.getDate());
                 daftarKamar.add(baru);
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.toString());
         }
-        int h = (int)Math.ceil(daftarKamar.size()/3)*100+400;
-        labelHasil.setPreferredSize(new Dimension(1050,30));
+        int h = (int) Math.ceil(daftarKamar.size() / 3) * 100 + 400;
+        labelHasil.setPreferredSize(new Dimension(1050, 30));
         contKamar.add(labelHasil);
         contKamar.setPreferredSize(new Dimension(1050, h));
-        labelHasil.setText("Ditemukan " +Integer.toString(daftarKamar.size())+" kamar");
+        labelHasil.setText("Ditemukan " + Integer.toString(daftarKamar.size()) + " kamar");
     }
-    private void updateKamar(JPanel cont){
+
+    private void updateKamar(JPanel cont) {
         cont.removeAll();
         daftarKamar.clear();
         String tglMasuk = new SimpleDateFormat("yyyy-MM-dd").format(inputMasuk.getDate());
         String tglKeluar = new SimpleDateFormat("yyyy-MM-dd").format(inputKeluar.getDate());
-        String acC = cekAc.isSelected()?"1":"0";
-        String doubleBe = cekDouble.isSelected()?"2":"1";
-        String query = "CALL get_available_rooms('"+tglMasuk+"','"+tglKeluar+"','"+doubleBe+"','"+acC+"')";
-        try{
+        String acC = cekAc.isSelected() ? "1" : "0";
+        String doubleBe = cekDouble.isSelected() ? "2" : "1";
+        String query = "CALL get_available_rooms('" + tglMasuk + "','" + tglKeluar + "','" + doubleBe + "','" + acC + "')";
+        try {
             dataFromDB = statement.executeQuery(query);
-            while(dataFromDB.next()){
-                RoomClass baru = new RoomClass(dataFromDB.getString(1),dataFromDB.getInt(2),dataFromDB.getInt(3),dataFromDB.getInt(4),inputMasuk.getDate(),inputKeluar.getDate());
+            while (dataFromDB.next()) {
+                RoomClass baru = new RoomClass(dataFromDB.getString(1), dataFromDB.getInt(2), dataFromDB.getInt(3), dataFromDB.getInt(4), inputMasuk.getDate(), inputKeluar.getDate());
                 daftarKamar.add(baru);
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.toString());
         }
-        
+
         Timer t = new Timer(100, new ActionListener() {
-            
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 cont.removeAll();
-                labelHasil.setText("Ditemukan " +Integer.toString(daftarKamar.size())+" kamar");
+                labelHasil.setText("Ditemukan " + Integer.toString(daftarKamar.size()) + " kamar");
                 cont.add(labelHasil);
-                for(RoomClass kamar:daftarKamar){
+                for (RoomClass kamar : daftarKamar) {
                     cont.add(kamar.createCard());
-                }          
+                }
             }
         });
         t.setRepeats(false);
         t.start();
-        int h = (int)Math.ceil(daftarKamar.size()/3)*100+400;
+        int h = (int) Math.ceil(daftarKamar.size() / 3) * 100 + 400;
         contKamar.setPreferredSize(new Dimension(1050, h));
     }
+
     public class CustomCheckBoxIcon implements Icon {
+
         private int size;
-        
 
         public CustomCheckBoxIcon(int size) {
             this.size = size;
@@ -110,30 +115,30 @@ public class Home extends JFrame{
             JCheckBox cb = (JCheckBox) c;
             if (cb.isSelected()) {
                 g.setColor(Color.BLACK);
-                g.fillArc(x,y,size-1,size-1,0,360);
+                g.fillArc(x, y, size - 1, size - 1, 0, 360);
             } else {
                 g.setColor(Color.WHITE);
-                g.fillArc(x,y,size-1,size-1,0,360);
+                g.fillArc(x, y, size - 1, size - 1, 0, 360);
             }
         }
-        
+
         @Override
         public int getIconWidth() {
             return size;
         }
-        
+
         @Override
         public int getIconHeight() {
             return size;
         }
     }
 
-    private void init(){
+    private void init() {
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JPanel contMain = new JPanel(null);
         JPanel contInput = new JPanel();
-        JPanel contButton = new JPanel(new GridLayout(9,1,0,20));
+        JPanel contButton = new JPanel(new GridLayout(9, 1, 0, 20));
 
         JLabel labelNama = new JLabel("Hotel Disyfa");
         JLabel labelKamar = new JLabel("Sisa Kamar");
@@ -151,101 +156,98 @@ public class Home extends JFrame{
         JTextField inputIn = new JTextField("Check IN : ");
         JTextField inputOut = new JTextField("Check OUT : ");
 
+        contJam.setBounds(0, 0, 350, 160);
 
-        contJam.setBounds(0,0,350,160);
-        
+        contDetails.setBounds(WindowSize.width - 350, 0, 350, 160);
 
-        contDetails.setBounds(WindowSize.width-350,0,350,160);
-
-        contButton.setBounds(WindowSize.width-350,200,350,650);
+        contButton.setBounds(WindowSize.width - 350, 200, 350, 650);
         contButton.setBackground(warna);
-        contButton.setBorder(BorderFactory.createEmptyBorder(0,30,0,67));
-        
-        contMain.setBounds(67,200,1120,650);
-        
-        contKamar.setLayout(new FlowLayout(FlowLayout.LEADING,20,20));
+        contButton.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 67));
+
+        contMain.setBounds(67, 200, 1120, 650);
+
+        contKamar.setLayout(new FlowLayout(FlowLayout.LEADING, 20, 20));
         contKamar.setBorder(BorderFactory.createEmptyBorder(0, 80, 0, 30));
         contData.setViewportView(contKamar);
-        contData.setBounds(0,100,1120,550);
+        contData.setBounds(0, 100, 1120, 550);
 
-        contInput.setLayout(new GridLayout(1,3,0,0));
-        contInput.setBorder(BorderFactory.createEmptyBorder(10,50,10,100));
-        contInput.setBounds(0,0,1120,100);
-        labelNama.setBounds(350,0, WindowSize.width-700,160);
-        labelNama.setFont(new Font("Inter", Font.BOLD,48));
+        contInput.setLayout(new GridLayout(1, 3, 0, 0));
+        contInput.setBorder(BorderFactory.createEmptyBorder(10, 50, 10, 100));
+        contInput.setBounds(0, 0, 1120, 100);
+        labelNama.setBounds(350, 0, WindowSize.width - 700, 160);
+        labelNama.setFont(new Font("Inter", Font.BOLD, 48));
         labelNama.setHorizontalAlignment(JLabel.CENTER);
 
-        labelKamar.setFont(new Font("Inter", Font.BOLD,20));
-        labelKamar.setBounds(67,30,180,50);
+        labelKamar.setFont(new Font("Inter", Font.BOLD, 20));
+        labelKamar.setBounds(67, 30, 180, 50);
 
-        labelPengunjung.setFont(new Font("Inter", Font.BOLD,20));
-        labelPengunjung.setBounds(67,80,180,50);
+        labelPengunjung.setFont(new Font("Inter", Font.BOLD, 20));
+        labelPengunjung.setBounds(67, 80, 180, 50);
 
-        labelHasil.setFont(new Font("Inter",Font.BOLD,15));
+        labelHasil.setFont(new Font("Inter", Font.BOLD, 15));
 
-        try{
+        try {
             String query = "SELECT COUNT(nomorKamar) FROM dataKamar WHERE status!='Used'";
             dataFromDB = statement.executeQuery(query);
-            while(dataFromDB.next()){
+            while (dataFromDB.next()) {
                 dataKamar.setText(Integer.toString(dataFromDB.getInt(1)));
             }
             query = "SELECT COUNT(nomorKamar) FROM dataKamar WHERE status='Used'";
             dataFromDB = statement.executeQuery(query);
-            while(dataFromDB.next()){
+            while (dataFromDB.next()) {
                 dataPengunjung.setText(Integer.toString(dataFromDB.getInt(1)));
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
 
         }
 
-        dataPengunjung.setFont(new Font("Inter", Font.BOLD,20));
-        dataPengunjung.setBounds(247,80,230,50);
+        dataPengunjung.setFont(new Font("Inter", Font.BOLD, 20));
+        dataPengunjung.setBounds(247, 80, 230, 50);
 
-        dataKamar.setFont(new Font("Inter", Font.BOLD,20));
-        dataKamar.setBounds(247,30,230,50);
+        dataKamar.setFont(new Font("Inter", Font.BOLD, 20));
+        dataKamar.setBounds(247, 30, 230, 50);
 
-        btnAdmin.setFont(new Font("Inter", Font.BOLD,32));
-        btnRooms.setFont(new Font("Inter", Font.BOLD,32));
-        btnBookings.setFont(new Font("Inter", Font.BOLD,32));
-        btnExit.setFont(new Font("Inter", Font.BOLD,32));
-        btnLogout.setFont(new Font("Inter", Font.BOLD,32));
-        labelMasuk.setFont(new Font("Inter", Font.ITALIC,20));
-        labelKeluar.setFont(new Font("Inter", Font.ITALIC,20));
-        inputIn.setFont(new Font("Inter", Font.ITALIC,20));
-        inputOut.setFont(new Font("Inter", Font.ITALIC,20));
+        btnAdmin.setFont(new Font("Inter", Font.BOLD, 32));
+        btnRooms.setFont(new Font("Inter", Font.BOLD, 32));
+        btnBookings.setFont(new Font("Inter", Font.BOLD, 32));
+        btnExit.setFont(new Font("Inter", Font.BOLD, 32));
+        btnLogout.setFont(new Font("Inter", Font.BOLD, 32));
+        labelMasuk.setFont(new Font("Inter", Font.ITALIC, 20));
+        labelKeluar.setFont(new Font("Inter", Font.ITALIC, 20));
+        inputIn.setFont(new Font("Inter", Font.ITALIC, 20));
+        inputOut.setFont(new Font("Inter", Font.ITALIC, 20));
 
-        cekAc.setFont(new Font("Inter", Font.ITALIC,20));
+        cekAc.setFont(new Font("Inter", Font.ITALIC, 20));
         cekAc.setIcon(new CustomCheckBoxIcon(30));
 
-        cekDouble.setFont(new Font("Inter", Font.ITALIC,20));
+        cekDouble.setFont(new Font("Inter", Font.ITALIC, 20));
         cekDouble.setIcon(new CustomCheckBoxIcon(30));
 
-
-        inputMasuk.setBounds(0,0,100,100);
+        inputMasuk.setBounds(0, 0, 100, 100);
         inputMasuk.getEditor().setEditable(false);
-        inputMasuk.setBorder(BorderFactory.createEmptyBorder(10,0,20,0));
+        inputMasuk.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
         inputMasuk.setBackground(Color.RED);
-        inputMasuk.setFont(new Font("Inter", Font.ITALIC,20));
-        
-        inputKeluar.setBounds(0,0,100,100);
-        inputKeluar.getEditor().setEditable(false);
-        inputKeluar.setBorder(BorderFactory.createEmptyBorder(10,0,20,0));
-        inputKeluar.setBackground(Color.RED);
-        inputKeluar.setFont(new Font("Inter", Font.ITALIC,20));
+        inputMasuk.setFont(new Font("Inter", Font.ITALIC, 20));
 
-        for(RoomClass kamar:daftarKamar){
+        inputKeluar.setBounds(0, 0, 100, 100);
+        inputKeluar.getEditor().setEditable(false);
+        inputKeluar.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        inputKeluar.setBackground(Color.RED);
+        inputKeluar.setFont(new Font("Inter", Font.ITALIC, 20));
+
+        for (RoomClass kamar : daftarKamar) {
             contKamar.add(kamar.createCard());
         }
 
         btnLogout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try{
+                try {
                     Login halo = new Login();
                     halo.setVisible(true);
                     halo.setLocationRelativeTo(null);
                     dispose();
-                }catch (Exception err){
+                } catch (Exception err) {
 
                 }
 
@@ -255,12 +257,12 @@ public class Home extends JFrame{
         btnAdmin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try{
+                try {
                     AdminLogin halo = new AdminLogin();
                     halo.setVisible(true);
                     halo.setLocationRelativeTo(null);
                     dispose();
-                }catch (Exception err){
+                } catch (Exception err) {
 
                 }
 
@@ -269,12 +271,12 @@ public class Home extends JFrame{
         btnBookings.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try{
+                try {
                     DaftarBooking halo = new DaftarBooking();
                     halo.setVisible(true);
                     halo.setLocationRelativeTo(null);
                     dispose();
-                }catch (Exception err){
+                } catch (Exception err) {
 
                 }
 
@@ -285,7 +287,6 @@ public class Home extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
 
-
                 System.exit(0);
             }
         });
@@ -293,23 +294,40 @@ public class Home extends JFrame{
         inputIn.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if(Character.isDigit(e.getKeyChar())){
-                    if(inputIn.getText().equals("Check IN : ")){
-                        inputIn.setText("");
-                    }else if(inputIn.getText().equals("")){
-                        inputIn.setText("Check IN : ");
-                    }
+                if (Character.compare(e.getKeyChar(), 'c') == 0 && !Character.isDigit(e.getKeyChar())) {
+                    inputIn.setText("");
                 }
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    String code = inputIn.getText();
+                    System.out.println(code);
+                    if (code.length() != 4 || !code.startsWith("c")) {
+                        JOptionPane.showMessageDialog(null, "Masukkan nilai yang valid");
+                    } else {
+                        code = code.replace('c', 'C');
+                        String query = "SELECT * FROM databooking b JOIN datauser u ON b.userId=u.username WHERE u.userId='"+code+"'";
+                        try {
+                            dataFromDB = statement.executeQuery(query);
+                            dataFromDB.next();
+                            int kamar = dataFromDB.getInt("nomorKamar");
+                            String nik = dataFromDB.getString("username");
+                            String dateIn = dataFromDB.getString("checkIn");
+                            JOptionPane.showMessageDialog(null, String.format("Kamar : %d\nNIK : %s\nCheck In : %s",kamar,nik,dateIn));
+                            
+                        } catch (SQLException f) {
+                            System.out.println(f.toString());
+                        }
+                    }
+                }
 
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if(!Character.isDigit(e.getKeyChar())){
+                if (!Character.isDigit(e.getKeyChar()) && !(Character.compare(e.getKeyChar(), 'c') == 0)) {
                     inputIn.setText("Check IN : ");
                 }
             }
@@ -317,37 +335,48 @@ public class Home extends JFrame{
         inputOut.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                if(Character.isDigit(e.getKeyChar())){
-                    if(inputOut.getText().equals("Check Out : ")){
-                        inputOut.setText("");
-                    }else if(inputOut.getText().equals("")){
-                        inputOut.setText("Check Out : ");
-                    }
+                if (Character.compare(e.getKeyChar(), 'c') == 0 && !Character.isDigit(e.getKeyChar())) {
+                    inputOut.setText("");
                 }
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    String code = inputOut.getText();
+                    System.out.println(code);
+                    if (code.length() != 4 || !code.startsWith("c")) {
+                        JOptionPane.showMessageDialog(null, "Masukkan nilai yang valid");
+                    } else {
+                        code = code.replace('c', 'C');
+                        String query = "CALL BookOut('"+code+"')";
+                        try {
+                            statement.executeQuery(query);                            
+                        } catch (SQLException f) {
+                            System.out.println(f.toString());
+                        }
+                    }
+                }
 
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if(!Character.isDigit(e.getKeyChar())){
-                    inputOut.setText("Check Out : ");
+                if (!Character.isDigit(e.getKeyChar()) && !(Character.compare(e.getKeyChar(), 'c') == 0)) {
+                    inputOut.setText("Check OUT : ");
                 }
             }
         });
         inputMasuk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)).after(inputKeluar.getDate())){
-                    inputKeluar.setDate(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)));
+                if (new Date(inputMasuk.getDate().getTime() + (24 * 60 * 60 * 1000)).after(inputKeluar.getDate())) {
+                    inputKeluar.setDate(new Date(inputMasuk.getDate().getTime() + (24 * 60 * 60 * 1000)));
                 }
-                if(inputMasuk.getDate().before(new Date())){
-                    JOptionPane.showMessageDialog(null,"Tidak bisa reservasi tanggal yang lewat");
+                if (inputMasuk.getDate().before(new Date())) {
+                    JOptionPane.showMessageDialog(null, "Tidak bisa reservasi tanggal yang lewat");
                     inputMasuk.setDate(new Date());
-    
+
                 }
                 updateKamar(contKamar);
             }
@@ -355,15 +384,15 @@ public class Home extends JFrame{
         inputKeluar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)).after(inputKeluar.getDate())){
-                    JOptionPane.showMessageDialog(null,"Cek In harus lebih awal");
-                    inputKeluar.setDate(new Date(inputMasuk.getDate().getTime()+(24 * 60 * 60 * 1000)));
+                if (new Date(inputMasuk.getDate().getTime() + (24 * 60 * 60 * 1000)).after(inputKeluar.getDate())) {
+                    JOptionPane.showMessageDialog(null, "Cek In harus lebih awal");
+                    inputKeluar.setDate(new Date(inputMasuk.getDate().getTime() + (24 * 60 * 60 * 1000)));
                     return;
                 }
                 updateKamar(contKamar);
             }
         });
-    
+
         cekAc.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -377,12 +406,11 @@ public class Home extends JFrame{
             }
         });
 
+        timeLabel.setFont(new Font("Inter", Font.BOLD, 20));
+        timeLabel.setBounds(67, 30, 230, 50);
 
-        timeLabel.setFont(new Font("Inter", Font.BOLD,20));
-        timeLabel.setBounds(67,30,230,50);
-
-        dateLabel.setFont(new Font("Inter", Font.BOLD,20));
-        dateLabel.setBounds(67,80,230,50);
+        dateLabel.setFont(new Font("Inter", Font.BOLD, 20));
+        dateLabel.setBounds(67, 80, 230, 50);
 
         Timer timer = new Timer(1000, new ActionListener() {
             @Override
@@ -441,6 +469,7 @@ public class Home extends JFrame{
         timeLabel.setText(currentTime);
         dateLabel.setText(currentDate);
     }
+
     public static void main(String[] args) {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -449,14 +478,13 @@ public class Home extends JFrame{
                     break;
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
-        try{
+        try {
             Home halo = new Home();
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
     }
 }
-

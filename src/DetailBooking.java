@@ -428,7 +428,7 @@ public class DetailBooking extends JFrame {
             insertUserStmt.executeUpdate();
 
             // Query untuk memasukkan data booking
-            String query = "INSERT INTO dataBooking (nomorKamar, userId, checkIn, checkOut, harga) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO databooking (nomorKamar, userId, checkIn, checkOut, harga) VALUES (?, ?, ?, ?, ?)";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, nomorKamar);
             preparedStatement.setString(2, nik); // Asumsi nik adalah userId
