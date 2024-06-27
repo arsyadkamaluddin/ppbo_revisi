@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.Locale;
 import javax.swing.border.EmptyBorder;
 
-public class Booking extends BookingBase {
+public class Booking extends BookingBase implements  WindowBehavior{
     ResultSet dataFromDB = null;
     Statement statement = null;
     DbConnect con = null;
@@ -51,7 +51,7 @@ public class Booking extends BookingBase {
 
     }
     
-    protected void init() {
+    public void init() {
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Booking");
@@ -388,7 +388,7 @@ public class Booking extends BookingBase {
     }
 
 
-    protected void updateTime() {
+    public void updateTime() {
         String currentTime = timeFormat.format(new Date());
         String currentDate = dateFormat.format(new Date());
         timeLabel.setText(currentTime);

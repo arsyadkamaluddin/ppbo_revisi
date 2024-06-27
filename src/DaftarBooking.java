@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class DaftarBooking extends JFrame{
+public class DaftarBooking extends JFrame implements WindowBehavior{
     Color warna = Color.WHITE;
     DbConnect con = new DbConnect();
     Statement statement = null;
@@ -59,7 +59,7 @@ public class DaftarBooking extends JFrame{
             System.out.println(e.toString());
         }
     }
-    private void init(){
+    public void init(){
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JPanel contMain = new JPanel(null);
@@ -171,7 +171,7 @@ public class DaftarBooking extends JFrame{
         getContentPane().setBackground(warna);
         setVisible(true);
     }
-    private void updateTime() {
+    public void updateTime() {
         String currentTime = timeFormat.format(new Date());
         String currentDate = dateFormat.format(new Date());
         timeLabel.setText(currentTime);

@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimerTask;
 
-public class Home extends JFrame {
+public class Home extends JFrame implements WindowBehavior{
 
     Color warna = Color.WHITE;
     DbConnect con = new DbConnect();
@@ -133,7 +133,7 @@ public class Home extends JFrame {
         }
     }
 
-    private void init() {
+    public void init() {
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JPanel contMain = new JPanel(null);
@@ -463,7 +463,7 @@ public class Home extends JFrame {
         setVisible(true);
     }
 
-    private void updateTime() {
+    public void updateTime() {
         String currentTime = timeFormat.format(new Date());
         String currentDate = dateFormat.format(new Date());
         timeLabel.setText(currentTime);

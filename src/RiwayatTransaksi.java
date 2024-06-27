@@ -18,7 +18,7 @@ import java.util.Locale;
 import java.util.TimerTask;
 import javax.swing.table.JTableHeader;
 
-public class RiwayatTransaksi extends JFrame{
+public class RiwayatTransaksi extends JFrame implements WindowBehavior{
     Color warna = Color.WHITE;
     DbConnect con = new DbConnect();
     Statement statement = null;
@@ -68,7 +68,7 @@ public class RiwayatTransaksi extends JFrame{
             System.out.println(e.toString());
         }
     }
-    private void init(){
+    public void init(){
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JPanel contMain = new JPanel(null);
@@ -191,7 +191,7 @@ public class RiwayatTransaksi extends JFrame{
         getContentPane().setBackground(warna);
         setVisible(true);
     }
-    private void updateTime() {
+    public void updateTime() {
         String currentTime = timeFormat.format(new Date());
         String currentDate = dateFormat.format(new Date());
         timeLabel.setText(currentTime);

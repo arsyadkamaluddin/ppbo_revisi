@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class EditKamar extends JFrame {
+public class EditKamar extends JFrame implements WindowBehavior{
     ResultSet dataFromDB = null;
     Statement statement = null;
     DbConnect con = new DbConnect();
@@ -70,7 +70,7 @@ public class EditKamar extends JFrame {
         
     }
 
-    private void init() {
+    public void init() {
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Edit Kamar");
@@ -284,7 +284,7 @@ public class EditKamar extends JFrame {
         setVisible(true);
         }
 
-        private void updateTime() {
+        public void updateTime() {
             String currentTime = timeFormat.format(new Date());
             String currentDate = dateFormat.format(new Date());
             timeLabel.setText(currentTime);
