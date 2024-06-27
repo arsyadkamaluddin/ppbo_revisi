@@ -1,12 +1,3 @@
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import org.jdesktop.swingx.JXDatePicker;
 import config.DbConnect;
 import javax.swing.*;
 import java.awt.*;
@@ -390,7 +381,8 @@ public class Pembayaran extends JFrame {
         btnCetak.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                cetakBuktiBayar();
+                InvoiceBayar invoiceBayar = new InvoiceBayar(nomorKamar, harga, masuk, keluar, namaPemesan, nik, telepon);
+                invoiceBayar.setVisible(true);
             }
         });
 
@@ -403,36 +395,7 @@ public class Pembayaran extends JFrame {
         dateLabel.setText(currentDate);
     }
 
-    private void cetakBuktiBayar() {
-        Document document = new Document();
-        try {
-            // Menggunakan PdfWriter untuk menuliskan dokumen ke file PDF
-            PdfWriter.getInstance(document, new FileOutputStream("invoice.pdf"));
-            document.open();
 
-            // Menambahkan konten ke dokumen
-            document.add(new Paragraph("Invoice Pembayaran"));
-            document.add(new Paragraph("==================="));
-            document.add(new Paragraph("Nomor Kamar: " + nomorKamar));
-            document.add(new Paragraph("Harga: " + harga));
-            document.add(new Paragraph("Nama Pemesan: " + namaPemesan));
-            document.add(new Paragraph("NIK: " + nik));
-            document.add(new Paragraph("Telepon: " + telepon));
-            document.add(new Paragraph("Checkin: " + new SimpleDateFormat("yyyy-MM-dd").format(masuk)));
-            document.add(new Paragraph("Checkout: " + new SimpleDateFormat("yyyy-MM-dd").format(keluar)));
-            document.add(new Paragraph("Jumlah Malam: " + jumlahmalam));
-            document.add(new Paragraph("Total Harga: " + totalharga));
-
-            // Menutup dokumen
-            document.close();
-
-            // Menampilkan pesan sukses ke user
-            JOptionPane.showMessageDialog(this, "Invoice berhasil dicetak sebagai invoice.pdf");
-        } catch (DocumentException | FileNotFoundException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Gagal mencetak invoice: " + e.getMessage());
-        }
-    }
 
     public static void main(String[] args) {
         try {

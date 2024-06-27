@@ -4,20 +4,14 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
-
 import javax.swing.*;
 public class RoomClass {
     private String roomNumber;
     private boolean doubleBed;
     private boolean ac;
-    private boolean available;
     private int price;
     private Date masuk;
     private Date keluar;
-    private int jumlahmalam;
-    private String namaPemesan;
-    private String nik;
-    private String telepon;
 
     public RoomClass(String roomNumber,int bed,int ac,int price,Date masuk,Date keluar){
         this.roomNumber = roomNumber;
@@ -25,8 +19,7 @@ public class RoomClass {
         this.ac = ac==1;
         this.price = price;
         this.masuk = masuk;
-        this.keluar = keluar;
-        
+        this.keluar = keluar;        
     }
    public JPanel createCard(){
        JPanel container = new JPanel();
