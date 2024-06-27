@@ -295,9 +295,11 @@ public class Admin extends JFrame{
                 if(inputHarga.getText()=="Harga "&&inputNomor.getText()=="Nomor Kamar "){
                     JOptionPane.showMessageDialog(null, "Isikan data yang valid");
                 }else{
-                    JOptionPane.showMessageDialog(null, "Kamar "+inputNomor.getText()+" berhasil ditambahkan");
-                    addRoom(Integer.valueOf(inputNomor.getText()),Integer.valueOf(inputHarga.getText()),cekAc.isSelected(),cekDouble.isSelected());
+                    if(addRoom(Integer.valueOf(inputNomor.getText()),Integer.valueOf(inputHarga.getText()),cekAc.isSelected(),cekDouble.isSelected())){
+                        JOptionPane.showMessageDialog(null, "Kamar "+inputNomor.getText()+" berhasil ditambahkan");
+                    }
                 }
+                resetForm();
             }
         });
         
@@ -355,17 +357,18 @@ public class Admin extends JFrame{
         setVisible(true);
     }
 
-    private void addRoom(int roomNumber,int price,boolean ac,boolean bed){
+    private boolean addRoom(int roomNumber,int price,boolean ac,boolean bed){
         int ranjang = bed?2:1;
         int ase = ac?1:0;
         try {
             String query = "INSERT INTO dataKamar (nomorKamar,ranjang,ac,status,harga) VALUES ('"+Integer.toString(roomNumber)+"','"+ranjang+"','"+ase+"','Available','"+price+"')";
             statement.executeUpdate(query);
             updateTable();
+            return true;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null,"Kamar dengan nomor "+Integer.toString(roomNumber)+" telah ada");
+            return false;
         }
-        resetForm();
     }
 
     public void resetForm(){
