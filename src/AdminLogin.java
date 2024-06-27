@@ -2,9 +2,7 @@
 import config.DbConnect;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.RoundRectangle2D;
 import java.sql.*;
-import java.util.logging.*;
 import javax.swing.*;
 
 public class AdminLogin extends JFrame{
@@ -40,7 +38,6 @@ public class AdminLogin extends JFrame{
         inputUsername = new JTextField();
         inputPassword = new JPasswordField();
 
-
         setFont(new Font("Agency FB", 0, 18));
 
         labelJudul.setFont(new Font("Tahoma", 1, 31));
@@ -69,7 +66,6 @@ public class AdminLogin extends JFrame{
             @Override
             public void keyReleased(KeyEvent e) {
                 if(e.getKeyCode()==KeyEvent.VK_ENTER)loginValidation();
-
             }
         });
 
@@ -118,8 +114,6 @@ public class AdminLogin extends JFrame{
             resetForm();
 
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e);
         }
     }
 

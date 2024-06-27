@@ -11,14 +11,12 @@ import java.util.Date;
 import java.util.Locale;
 import javax.swing.border.EmptyBorder;
 
-public class DetailBooking extends JFrame implements WindowBehavior{
+public class DetailBooking extends JFrame {
     ResultSet dataFromDB = null;
     Statement statement = null;
     DbConnect con = null;
-    private ArrayList<RoomClass> daftarKamar = new ArrayList<RoomClass>();
     private JLabel timeLabel = new JLabel();
     private JLabel dateLabel = new JLabel();
-    private JScrollPane contKamar = new JScrollPane();
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
     private int nomorKamar;
@@ -28,7 +26,6 @@ public class DetailBooking extends JFrame implements WindowBehavior{
     private String namaPemesan;
     private String nik;
     private String telepon;
-
     private long jumlahmalam;
     private long totalharga;
     private int ranjang;
@@ -40,14 +37,11 @@ public class DetailBooking extends JFrame implements WindowBehavior{
             statement = con.getConnection().createStatement();
             dataFromDB = statement.executeQuery("SELECT * FROM dataKamar WHERE nomorKamar='"+nomorKamar+"'");
             while (dataFromDB.next()) {
-//                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
-//               daftarKamar.add(baru);
                 ranjang = dataFromDB.getInt("ranjang");
                 ac = dataFromDB.getInt("ac");
                 harga = dataFromDB.getInt(6);
 
             }
-            System.out.println(daftarKamar.size());
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
@@ -64,7 +58,7 @@ public class DetailBooking extends JFrame implements WindowBehavior{
 
     }
 
-    public void init() {
+    private void init() {
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Detail Booking");
@@ -399,7 +393,7 @@ public class DetailBooking extends JFrame implements WindowBehavior{
         this.dispose(); // Pastikan ini berada dalam konteks kelas BookingApp
     }
 
-    public void updateTime() {
+    private void updateTime() {
         String currentTime = timeFormat.format(new Date());
         String currentDate = dateFormat.format(new Date());
         timeLabel.setText(currentTime);
@@ -412,12 +406,9 @@ public class DetailBooking extends JFrame implements WindowBehavior{
         PreparedStatement preparedStatement = null;
 
         try {
-            // Inisialisasi koneksi
             connection = con.getConnection();
-            // Set auto-commit ke false untuk manajemen transaksi
             connection.setAutoCommit(false);
 
-            // Query untuk memasukkan data pengguna
             String insertUserQuery = "INSERT INTO datauser (name, username, password, role) VALUES (?, ?, ?, ?)";
             insertUserStmt = connection.prepareStatement(insertUserQuery);
             insertUserStmt.setString(1, namaPemesan);
@@ -426,7 +417,6 @@ public class DetailBooking extends JFrame implements WindowBehavior{
             insertUserStmt.setString(4, "cust");
             insertUserStmt.executeUpdate();
 
-            // Query untuk memasukkan data booking
             String query = "INSERT INTO databooking (nomorKamar, userId, checkIn, checkOut, harga) VALUES (?, ?, ?, ?, ?)";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, nomorKamar);
@@ -436,25 +426,11 @@ public class DetailBooking extends JFrame implements WindowBehavior{
             preparedStatement.setLong(5, totalharga);
             preparedStatement.executeUpdate();
 
-            // Commit transaksi
             connection.commit();
             JOptionPane.showMessageDialog(this, "Data booking berhasil disimpan");
             } catch (SQLException e) {
                 e.printStackTrace();
-                if (connection != null) {
-                    try {
-                        // Rollback transaksi jika terjadi kesalahan
-                        connection.rollback();
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                }
                 JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data booking");
-            } finally {
-                // Tutup resources
-                if (insertUserStmt != null) try { insertUserStmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-                if (preparedStatement != null) try { preparedStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
-                if (connection != null) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
         }
 
@@ -465,7 +441,6 @@ public class DetailBooking extends JFrame implements WindowBehavior{
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
-                System.out.println(info.getName());
             }
         } catch (Exception e) {
             System.out.println(e.toString());

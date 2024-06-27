@@ -2,9 +2,7 @@
 import config.DbConnect;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.RoundRectangle2D;
 import java.sql.*;
-import java.util.logging.*;
 import javax.swing.*;
 
 public class Login extends JFrame{
@@ -82,7 +80,6 @@ public class Login extends JFrame{
             }
         });
 
-//        GroupLayout layout = new GroupLayout(getContentPane());
         GridLayout layout = new GridLayout(3,1,0,20);
         JPanel container = new JPanel();
         container.setBorder(BorderFactory.createEmptyBorder(50,50,0,50));
@@ -105,7 +102,6 @@ public class Login extends JFrame{
             Statement db = con.getConnection().createStatement();
             String query = "SELECT * FROM dataUser WHERE username='" + inputUsername.getText() + "'";
             dataLoginFromDB = db.executeQuery(query);
-
             if (dataLoginFromDB.next()) {
                 if (dataLoginFromDB.getString(4).equals(inputPassword.getText())) {
                     Home o = new Home();

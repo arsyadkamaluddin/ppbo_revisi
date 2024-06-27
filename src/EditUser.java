@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -17,10 +16,8 @@ public class EditUser extends JFrame implements WindowBehavior{
     ResultSet dataFromDB = null;
     Statement statement = null;
     DbConnect con = new DbConnect();
-    private ArrayList<UserClass> daftarUser = new ArrayList<UserClass>();
     private JLabel timeLabel = new JLabel();
     private JLabel dateLabel = new JLabel();
-    private JScrollPane contKamar = new JScrollPane();
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
     private JTable dataTable;
@@ -55,8 +52,6 @@ public class EditUser extends JFrame implements WindowBehavior{
         JButton btnExit = new JButton("Kembali");
 
         JPanel contKamar = new JPanel(null);
-
-        JTable tableUser;
 
         contJam.setBounds(0, 0, 350, 160);
         contJam.setBackground(new Color(0xD9D9D9));
@@ -265,7 +260,6 @@ public class EditUser extends JFrame implements WindowBehavior{
     }
 
     private void fetchUserData(String userID) {
-        System.out.println("Fetching data for userID: " + userID);
         try {
             String query = "SELECT * FROM datauser WHERE userId = ?";
             PreparedStatement preparedStatement = con.getConnection().prepareStatement(query);
@@ -318,7 +312,6 @@ public class EditUser extends JFrame implements WindowBehavior{
 
     private void updateTableData() {
         tableModel.setRowCount(0);
-
         String query = "SELECT * FROM datauser";
         try {
             dataFromDB = statement.executeQuery(query);

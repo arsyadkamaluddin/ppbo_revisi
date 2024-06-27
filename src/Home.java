@@ -1,7 +1,6 @@
 
 import org.jdesktop.swingx.JXDatePicker;
 import config.DbConnect;
-import javax.sound.sampled.BooleanControl;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
@@ -13,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimerTask;
 
 public class Home extends JFrame implements WindowBehavior{
 

@@ -1,22 +1,15 @@
 import org.jdesktop.swingx.JXDatePicker;
 import config.DbConnect;
-import javax.sound.sampled.BooleanControl;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
 import java.sql.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimerTask;
-import javax.swing.table.JTableHeader;
 
 public class RiwayatTransaksi extends JFrame implements WindowBehavior{
     Color warna = Color.WHITE;
@@ -81,7 +74,7 @@ public class RiwayatTransaksi extends JFrame implements WindowBehavior{
         JLabel labelNama = new JLabel("RiwayatTransaksi Hotel Disyfa");
         JLabel labelKamar = new JLabel("Sisa Kamar");
         JLabel labelPengunjung = new JLabel("Pengunjung");
-        JLabel labelPenghasilan = new JLabel("Penghasilan :");
+        JLabel labelPenghasilan = new JLabel("Bulan ini :");
 
         JButton btnExit = new JButton("Keluar");        
 

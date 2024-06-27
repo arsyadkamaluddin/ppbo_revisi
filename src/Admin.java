@@ -1,9 +1,7 @@
 import org.jdesktop.swingx.JXDatePicker;
 import config.DbConnect;
-import javax.sound.sampled.BooleanControl;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
 import java.sql.*;
 import java.awt.event.ActionEvent;
@@ -11,11 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimerTask;
-import javax.swing.table.JTableHeader;
 
 public class Admin extends JFrame implements WindowBehavior{
     Color warna = Color.WHITE;
@@ -26,7 +21,6 @@ public class Admin extends JFrame implements WindowBehavior{
     private JCheckBox cekDouble = new JCheckBox("Double Bed");
     private JLabel timeLabel = new JLabel();
     private JLabel dateLabel = new JLabel();
-    private  JScrollPane contMain = new JScrollPane();
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
     private DefaultTableModel dataTblKamar;
@@ -371,7 +365,7 @@ public class Admin extends JFrame implements WindowBehavior{
         }
     }
 
-    public void resetForm(){
+    private void resetForm(){
         cekAc.setSelected(false);
         cekDouble.setSelected(false);
         inputHarga.setText("Harga ");

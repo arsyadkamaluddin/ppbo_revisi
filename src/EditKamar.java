@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -17,10 +16,8 @@ public class EditKamar extends JFrame implements WindowBehavior{
     ResultSet dataFromDB = null;
     Statement statement = null;
     DbConnect con = new DbConnect();
-    private ArrayList<RoomClass> daftarKamar = new ArrayList<RoomClass>();
     private JLabel timeLabel = new JLabel();
     private JLabel dateLabel = new JLabel();
-    private JScrollPane contKamar = new JScrollPane();
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
     private JTable dataTable;
