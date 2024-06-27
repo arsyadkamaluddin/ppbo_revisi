@@ -4,6 +4,7 @@ import java.awt.*;
 import java.sql.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +28,7 @@ public class Pembayaran extends JFrame implements WindowBehavior{
     private String namaPemesan;
     private String nik;
     private String telepon;
+    private String userId;
     private long jumlahmalam;
     private long totalharga;
     private int ranjang;
@@ -38,14 +40,14 @@ public class Pembayaran extends JFrame implements WindowBehavior{
             statement = con.getConnection().createStatement();
             dataFromDB = statement.executeQuery("SELECT * FROM dataKamar");
             while (dataFromDB.next()) {
-//                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
-//               daftarKamar.add(baru);
                 ranjang = dataFromDB.getInt("ranjang");
                 ac = dataFromDB.getInt("ac");
                 harga = dataFromDB.getInt(6);
 
             }
-            System.out.println(daftarKamar.size());
+            dataFromDB = statement.executeQuery("SELECT userId FROM datauser WHERE username='"+nik+"' ORDER BY userId DESC LIMIT 1");
+            dataFromDB.next();
+            userId = dataFromDB.getString(1);
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
@@ -381,8 +383,11 @@ public class Pembayaran extends JFrame implements WindowBehavior{
         btnCetak.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                InvoiceBayar invoiceBayar = new InvoiceBayar(nomorKamar, harga, masuk, keluar, namaPemesan, nik, telepon);
-                invoiceBayar.setVisible(true);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+                new Invoice(userId,nomorKamar,(int)totalharga,formatter.format(masuk),formatter.format(keluar),namaPemesan);
+                JOptionPane.showMessageDialog(null, "Invoice Berhasil Dicetak");
+                dispose();
             }
         });
 

@@ -345,8 +345,7 @@ public class DetailBooking extends JFrame {
         btnSave.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveBooking(); // Panggil metode untuk menyimpan booking
-                navigateToPembayaran();
+                if(saveBooking())navigateToPembayaran();
             }
         });
         btnSave.setBounds(940, 750, 200, 50);
@@ -400,7 +399,7 @@ public class DetailBooking extends JFrame {
         dateLabel.setText(currentDate);
     }
 
-    private void saveBooking() {
+    private boolean saveBooking() {
         Connection connection = null;
         PreparedStatement insertUserStmt = null;
         PreparedStatement preparedStatement = null;
@@ -428,9 +427,11 @@ public class DetailBooking extends JFrame {
 
             connection.commit();
             JOptionPane.showMessageDialog(this, "Data booking berhasil disimpan");
+            return true;
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menyimpan data booking");
+                return false;
             }
         }
 

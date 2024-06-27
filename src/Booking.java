@@ -8,12 +8,15 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import javax.swing.border.EmptyBorder;
 
-public class Booking extends BookingBase implements  WindowBehavior{
+public class Booking extends BookingBase {
     ResultSet dataFromDB = null;
     Statement statement = null;
     DbConnect con = null;
+    private ArrayList<RoomClass> daftarKamar = new ArrayList<RoomClass>();
+    private JScrollPane contKamar = new JScrollPane();
     private int nomorKamar;
     private int harga;
     private Date masuk;
@@ -29,11 +32,15 @@ public class Booking extends BookingBase implements  WindowBehavior{
            statement = con.getConnection().createStatement();
            dataFromDB = statement.executeQuery("SELECT * FROM dataKamar WHERE nomorKamar='"+nomorKamar+"'");
            while (dataFromDB.next()) {
+//                RoomClass baru = new RoomClass(dataFromDB.getString(2), dataFromDB.getInt(3), dataFromDB.getString(4), dataFromDB.getString(5), dataFromDB.getInt(6));
+//                daftarKamar.add(baru);
                     ranjang = dataFromDB.getInt("ranjang");
                     ac = dataFromDB.getInt("ac");
                     harga = dataFromDB.getInt(6);
            }
+           System.out.println(daftarKamar.size());
        } catch (SQLException e) {
+           System.out.println(e.toString());
        }
         this.nomorKamar=nomorKamar;
         this.masuk = masuk;
@@ -44,7 +51,7 @@ public class Booking extends BookingBase implements  WindowBehavior{
 
     }
     
-    public void init() {
+    protected void init() {
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
         JLabel labelNama = new JLabel("Booking");
@@ -381,7 +388,7 @@ public class Booking extends BookingBase implements  WindowBehavior{
     }
 
 
-    public void updateTime() {
+    protected void updateTime() {
         String currentTime = timeFormat.format(new Date());
         String currentDate = dateFormat.format(new Date());
         timeLabel.setText(currentTime);

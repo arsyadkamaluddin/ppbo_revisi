@@ -284,7 +284,6 @@ public class Home extends JFrame implements WindowBehavior{
         btnExit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 System.exit(0);
             }
         });
@@ -313,8 +312,13 @@ public class Home extends JFrame implements WindowBehavior{
                             int kamar = dataFromDB.getInt("nomorKamar");
                             String nik = dataFromDB.getString("username");
                             String dateIn = dataFromDB.getString("checkIn");
-                            JOptionPane.showMessageDialog(null, String.format("Kamar : %d\nNIK : %s\nCheck In : %s",kamar,nik,dateIn));
-                            
+                            // JOptionPane.showMessageDialog(null, String.format("Kamar : %d\nNIK : %s\nCheck In : %s",kamar,nik,dateIn));
+                            int konfirmasi = JOptionPane.showConfirmDialog(new ConfirmDialogInFrame(), 
+                            String.format("Kamar : %d\nNIK : %s\nCheck In : %s",kamar,nik,dateIn), "Data Reservasi", 
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                if(konfirmasi==0){
+                    statement.executeQuery("CALL update_stat('"+new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"')");
+                }
                         } catch (SQLException f) {
                             System.out.println(f.toString());
                         }
@@ -349,7 +353,7 @@ public class Home extends JFrame implements WindowBehavior{
                         code = code.replace('c', 'C');
                         String query = "CALL BookOut('"+code+"')";
                         try {
-                            statement.executeQuery(query);                            
+                            statement.executeQuery(query);                          
                         } catch (SQLException f) {
                             System.out.println(f.toString());
                         }
