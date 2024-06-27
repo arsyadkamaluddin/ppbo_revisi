@@ -1,42 +1,28 @@
-import org.jdesktop.swingx.JXDatePicker;
-import config.DbConnect;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class EditUser extends JFrame implements WindowBehavior{
-    ResultSet dataFromDB = null;
-    Statement statement = null;
-    DbConnect con = new DbConnect();
-    private JLabel timeLabel = new JLabel();
-    private JLabel dateLabel = new JLabel();
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
-    private JTable dataTable;
-    private DefaultTableModel tableModel;
+public class EditUser extends EditBase {
+
     private JTextField inputNama;
     private JTextField inputUsername;
     private JTextField inputPassword;
-    private JLabel updateStatusLabel = new JLabel();
-    private JTextField inputID;
 
     public EditUser() {
-        try {
-            statement = con.getConnection().createStatement();
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        init();
-    }    
+        super(); // Calls the constructor of EditBase
+    }
 
+    @Override
     public void init() {
         JPanel contJam = new JPanel(null);
         JPanel contDetails = new JPanel(null);
@@ -84,7 +70,7 @@ public class EditUser extends JFrame implements WindowBehavior{
 
         btnExit.setFont(new Font("Inter", Font.BOLD, 32));
 
-        btnSearchID.addActionListener(new ActionListener() {
+        addActionListener(btnSearchID, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String userID = inputID.getText();
@@ -92,7 +78,7 @@ public class EditUser extends JFrame implements WindowBehavior{
             }
         });
 
-        btnUpdate.addActionListener(new ActionListener() {
+        addActionListener(btnUpdate, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String userID = inputID.getText();
@@ -104,7 +90,7 @@ public class EditUser extends JFrame implements WindowBehavior{
             }
         });
 
-        btnExit.addActionListener(new ActionListener() {
+        addActionListener(btnExit, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Admin admin = new Admin();
@@ -113,7 +99,7 @@ public class EditUser extends JFrame implements WindowBehavior{
             }
         });
 
-        inputID.addKeyListener(new KeyListener() {
+        addKeyListener(inputID, new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (inputID.getText().equals("Masukkan ID...")) {
@@ -132,7 +118,7 @@ public class EditUser extends JFrame implements WindowBehavior{
             }
         });
 
-        inputNama.addKeyListener(new KeyListener() {
+        addKeyListener(inputNama, new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (inputNama.getText().equals("Name")) {
@@ -151,7 +137,7 @@ public class EditUser extends JFrame implements WindowBehavior{
             }
         });
 
-        inputUsername.addKeyListener(new KeyListener() {
+        addKeyListener(inputUsername, new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (inputUsername.getText().equals("Username")) {
@@ -170,7 +156,7 @@ public class EditUser extends JFrame implements WindowBehavior{
             }
         });
 
-        inputPassword.addKeyListener(new KeyListener() {
+        addKeyListener(inputPassword, new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (inputPassword.getText().equals("Password")) {
@@ -239,21 +225,15 @@ public class EditUser extends JFrame implements WindowBehavior{
         setSize(WindowSize.width, WindowSize.heigth);
         setUndecorated(true);
 
-        updateTableData();
+        updateTableData("SELECT * FROM datauser", new String[]{"userId", "name", "username", "password", "role"});
 
         setLayout(null);
         getContentPane().setBackground(Color.WHITE);
         setVisible(true);
     }
 
-    public void updateTime() {
-        String currentTime = timeFormat.format(new Date());
-        String currentDate = dateFormat.format(new Date());
-        timeLabel.setText(currentTime);
-        dateLabel.setText(currentDate);
-    }
-    private void resetForm(){
-        inputID.setText("Masukkan ID...");
+    protected void resetForm() {
+        super.resetForm(); // Call the superclass resetForm method to reset inputID field
         inputNama.setText("Nama");
         inputUsername.setText("Username");
         inputPassword.setText("Password");
@@ -265,23 +245,31 @@ public class EditUser extends JFrame implements WindowBehavior{
             PreparedStatement preparedStatement = con.getConnection().prepareStatement(query);
             preparedStatement.setString(1, userID);
             ResultSet resultSet = preparedStatement.executeQuery();
-            
+
             if (resultSet.next()) {
-                inputNama.setText(resultSet.getString("name"));
-                inputUsername.setText(resultSet.getString("username"));
-                inputPassword.setText(resultSet.getString("password"));
+                String name = resultSet.getString("name");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String role = resultSet.getString("role");
+
+                UserClass user = new UserClass(userID, name, username, password, role);
+
+                inputNama.setText(user.getName());
+                inputUsername.setText(user.getUsername());
+                inputPassword.setText(user.getPassword());
             } else {
-                JOptionPane.showMessageDialog(this, "User tidak ditemukan.", "Error", JOptionPane.ERROR_MESSAGE);
+                showMessageDialog("User tidak ditemukan.", "Error", JOptionPane.ERROR_MESSAGE);
+                resetForm();
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error fetching user data.", "Error", JOptionPane.ERROR_MESSAGE);
+            showMessageDialog("Error fetching user data.", "Error", JOptionPane.ERROR_MESSAGE);
             System.out.println("SQLException: " + e.getMessage());
             e.printStackTrace();
             resetForm();
         }
         
     }
-    
+
     private void updateUser(String userID, String name, String username, String password) {
         try {
             String query = "UPDATE dataUser SET name = ?, username = ?, password = ? WHERE userId = ?";
@@ -292,40 +280,22 @@ public class EditUser extends JFrame implements WindowBehavior{
             preparedStatement.setString(4, userID);
             int rowsUpdated = preparedStatement.executeUpdate();
             if (rowsUpdated > 0) {
-                JOptionPane.showMessageDialog(this, "Data user berhasil diperbarui untuk user id " + userID);
+                showMessageDialog("Data user berhasil diperbarui untuk user id " + userID, "Success", JOptionPane.INFORMATION_MESSAGE);
                 updateStatusLabel.setText("Update Berhasil...");
                 updateStatusLabel.setForeground(Color.GREEN);
             } else {
-                JOptionPane.showMessageDialog(this, "Data user berhasil diperbarui untuk user id " + userID);
+                showMessageDialog("Tidak Ada Perubahan Data.", "Info", JOptionPane.WARNING_MESSAGE);
                 updateStatusLabel.setText("Tidak Ada Perubahan Data.");
                 updateStatusLabel.setForeground(Color.ORANGE);
             }
-            updateTableData();
+            updateTableData("SELECT * FROM datauser", new String[]{"userId", "name", "username", "password", "role"});
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error updating user data: " + e.getMessage());
+            showMessageDialog("Error updating user data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             updateStatusLabel.setText("Update Gagal.");
             updateStatusLabel.setForeground(Color.RED);
             e.printStackTrace();
         }
         resetForm();
-    }
-
-    private void updateTableData() {
-        tableModel.setRowCount(0);
-        String query = "SELECT * FROM datauser";
-        try {
-            dataFromDB = statement.executeQuery(query);
-            while (dataFromDB.next()) {
-                tableModel.addRow(new Object[]{dataFromDB.getString("userId"), 
-                    dataFromDB.getString("name"), 
-                    dataFromDB.getString("username"), 
-                    dataFromDB.getString("password"), 
-                    dataFromDB.getString("role")});
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error updating table data: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     public static void main(String[] args) {
