@@ -19,7 +19,7 @@ public class EditUser extends EditBase {
     private JTextField inputPassword;
 
     public EditUser() {
-        super(); // Calls the constructor of EditBase
+        super();
     }
 
     @Override
@@ -231,9 +231,12 @@ public class EditUser extends EditBase {
         getContentPane().setBackground(Color.WHITE);
         setVisible(true);
     }
+    public void updateTime() {
+        super.updateTime();
+    }
 
     protected void resetForm() {
-        super.resetForm(); // Call the superclass resetForm method to reset inputID field
+        super.resetForm();
         inputNama.setText("Nama");
         inputUsername.setText("Username");
         inputPassword.setText("Password");

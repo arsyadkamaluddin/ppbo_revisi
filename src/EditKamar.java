@@ -1,45 +1,30 @@
-import org.jdesktop.swingx.JXDatePicker;
-import config.DbConnect;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class EditKamar extends JFrame implements WindowBehavior{
-    ResultSet dataFromDB = null;
-    Statement statement = null;
-    DbConnect con = new DbConnect();
-    private JLabel timeLabel = new JLabel();
-    private JLabel dateLabel = new JLabel();
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy", new Locale("id", "ID"));
-    private JTable dataTable;
-    private DefaultTableModel tableModel;
+public class EditKamar extends EditBase {
     private JRadioButton acButton;
     private JRadioButton nonAcButton;
     private JRadioButton singleButton;
     private JRadioButton doubleButton;
     private JTextField inputHarga;
-    private JLabel updateStatusLabel = new JLabel();
-    private JTextField inputID;
     private ButtonGroup bedGroup = new ButtonGroup();
     private ButtonGroup acGroup = new ButtonGroup();
 
-
     public EditKamar() {
-        try {
-            statement = con.getConnection().createStatement();
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        init();
+        super();
+        bedGroup = new ButtonGroup();
+        acGroup = new ButtonGroup();
         updateTable();
     }
 
@@ -59,11 +44,12 @@ public class EditKamar extends JFrame implements WindowBehavior{
         }
     }
 
-    private void resetForm(){
+    protected void resetForm(){
         inputID.setText("Masukkan nomor kamar...");
         bedGroup.clearSelection();
         acGroup.clearSelection();
         inputHarga.setText("Harga");
+        
         
     }
 
@@ -85,6 +71,13 @@ public class EditKamar extends JFrame implements WindowBehavior{
         JPanel contKamar = new JPanel(null);
 
         JTable tabelKamar;
+
+        if (acGroup == null) {
+            acGroup = new ButtonGroup();
+        }
+        if (bedGroup == null) {
+        bedGroup = new ButtonGroup();
+        }
 
         contJam.setBounds(0, 0, 350, 160);
         contJam.setBackground(new Color(0xD9D9D9));
@@ -282,10 +275,7 @@ public class EditKamar extends JFrame implements WindowBehavior{
         }
 
         public void updateTime() {
-            String currentTime = timeFormat.format(new Date());
-            String currentDate = dateFormat.format(new Date());
-            timeLabel.setText(currentTime);
-            dateLabel.setText(currentDate);
+            super.updateTime();
         }
     
         private void fetchRoomData(String roomNumber) {
